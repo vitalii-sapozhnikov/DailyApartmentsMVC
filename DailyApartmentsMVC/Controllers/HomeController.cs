@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Web;
 
 namespace DailyApartmentsMVC.Controllers
 {
@@ -16,11 +17,24 @@ namespace DailyApartmentsMVC.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string country, string city, int? price, DateTime? startDate, DateTime? endDate, int? roomNumber, int? sleepingPlacesNumber)
         {
-            var airbnbContext = _context.Properties.Include(a => a.PropertyOwner);
-            return View(await airbnbContext.ToListAsync());
+            var properties = _context.Properties.Include(a => a.PropertyOwner);
+
+            // Build the LINQ query to filter the properties.
+            var filteredProperties = properties.Where(p =>
+                (string.IsNullOrEmpty(country) || p.Country == country) &&
+                (string.IsNullOrEmpty(city) || p.City == city) &&
+                (!price.HasValue || p.Price <= price) &&
+                (!roomNumber.HasValue || p.RoomNumber >= roomNumber) &&
+                (!sleepingPlacesNumber.HasValue || p.SleepingPlaceNumber >= sleepingPlacesNumber));
+
+            int numberOfSuggestions = filteredProperties.Count();
+            ViewBag.Message = $"Було знайдено ${numberOfSuggestions} пропозицій по вашому запиту!";
+
+            return View(filteredProperties);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

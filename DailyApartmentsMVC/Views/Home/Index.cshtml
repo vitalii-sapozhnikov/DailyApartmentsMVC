@@ -4,40 +4,101 @@
     ViewData["Title"] = "Home Page";
 }
 
-@foreach (var item in Model)
-{
-    <div class="card mb-3 mt-5">
-        <h3 class="card-header">@item.Title</h3>
-        <div class="card-body">
-            <h5 class="card-title">@item.City, @item.Country</h5>
+
+<div class="container" style="max-width: 1200px;">
+    <div class="row">
+        <div class="col-md-4 mt-5 px-5">
+            <form method="get" action="@Url.Action("Index")" >
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" class="form-control" id="country" name="country" value="@Html.Raw(Context.Request.Query["country"])">
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="@Html.Raw(Context.Request.Query["city"])">
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" class="form-control" id="price" name="price" value="@Html.Raw(Context.Request.Query["price"])">
+                </div>
+                <div class="form-group">
+                    <label for="start-date">Start Date</label>
+                    <input type="date" class="form-control" id="start-date" name="startDate" value="@Html.Raw(Context.Request.Query["startDate"])">
+                </div>
+                <div class="form-group">
+                    <label for="end-date">End Date</label>
+                    <input type="date" class="form-control" id="end-date" name="endDate" value="@Html.Raw(Context.Request.Query["endDate"])">
+                </div>
+                <div class="form-group">
+                    <label for="room-number">Room Number</label>
+                    <input type="number" class="form-control" id="room-number" name="roomNumber" value="@Html.Raw(Context.Request.Query["roomNumber"])">
+                </div>
+                <div class="form-group">
+                    <label for="sleeping-places-number">Sleeping Places Number</label>
+                    <input type="number" class="form-control" id="sleeping-places-number" name="sleepingPlacesNumber" value="@Html.Raw(Context.Request.Query["sleepingPlacesNumber"])">
+                </div>
+
+                <!-- Add hidden input field for filter button -->
+                <input type="hidden" name="filter" value="true" />
+
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-            <rect width="100%" height="100%" fill="#868e96"></rect>
-            <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-        </svg>
-        <div class="card-body">
-            <p class="card-text">@item.Description</p>
-        </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                @{
-                    string rooms = "кімната"; if (item.RoomNumber > 1) rooms = "кімнати";
-                    if (item.RoomNumber > 4) rooms = "кімнат";
-                    string beds = "спальне місце"; if (item.SleepingPlaceNumber > 1) beds = $"спальних місця";
-                    if (item.SleepingPlaceNumber > 4) beds = $"спальних місць";
-                }
-                @item.RoomNumber @rooms, @item.SleepingPlaceNumber @beds
-            </li>
-            <li class="list-group-item">вул. @item.Street, @item.House</li>
-            <li class="list-group-item">$@item.Price</li>
-        </ul>
-        @* <div class="card-body">
-            <a href="#" class="card-link">Card link</a>
-            <a href="#" class="card-link">Another link</a>
-        </div> *@
-        <div class="card-footer text-muted">
-            @item.PublicationDate.ToShortDateString()
+        <div class="col-md-8 px-5">
+            <!-- Dynamic margin top and margin bottom for cards -->
+            @{
+                string mt = "mt-5", mb = "mb-3";
+            }
+
+            <!-- Show message if filter button was clicked -->
+            @if (Context.Request.Query.ContainsKey("filter"))
+            {
+                mt = "mt-2"; mb = "mb-5";
+                <div class="alert alert-dismissible alert-success mt-5">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>Було знайдено @Model.Count() пропозицій по вашому запиту</strong>
+                </div>
+            }
+
+            @foreach (var item in Model)
+            {
+                <div class="card @mb @mt">
+                    <h3 class="card-header">@item.Title</h3>
+                    <div class="card-body">
+                        <h5 class="card-title">@item.City, @item.Country</h5>
+                    </div>
+                    <img src=@item.PhotoLinks[0] class="img-fluid" alt="Responsive image">
+                    <div class="card-body">
+                        <p class="card-text">@item.Description</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            @{
+                                string rooms = "кімната"; if (item.RoomNumber > 1) rooms = "кімнати";
+                                if (item.RoomNumber > 4) rooms = "кімнат";
+                                string beds = "спальне місце"; if (item.SleepingPlaceNumber > 1) beds = $"спальних місця";
+                                if (item.SleepingPlaceNumber > 4) beds = $"спальних місць";
+                            }
+                            @item.RoomNumber @rooms, @item.SleepingPlaceNumber @beds
+                        </li>
+                        <li class="list-group-item">вул. @item.Street, @item.House</li>
+                        <li class="list-group-item">$@item.Price</li>
+                    </ul>
+                    @* <div class="card-body">
+                <a href="#" class="card-link">Card link</a>
+                <a href="#" class="card-link">Another link</a>
+                </div> *@
+                    <div class="card-footer text-muted">
+                        @item.PublicationDate.ToShortDateString()
+                    </div>
+                </div>
+            }
         </div>
     </div>
-}
+</div>
+
+
+
+
+
 
