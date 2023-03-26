@@ -4,44 +4,105 @@
     ViewData["Title"] = "Home Page";
 }
 
-
 <div class="container" style="max-width: 1200px;">
     <div class="row">
-        <div class="col-md-4 mt-5 px-5">
-            <form method="get" action="@Url.Action("Index")" >
-                <div class="form-group">
-                    <label for="country">Country</label>
-                    <input type="text" class="form-control" id="country" name="country" value="@Html.Raw(Context.Request.Query["country"])">
+        <div class="col-md-4 mt-5 px-5 card border-primary" style="min-width: fit-content; height: fit-content;">
+            <form method="get" action="@Url.Action("Index")"  class="mt-4 mb-4">
+                @*Country*@
+                <div class="form-group mb-3">
+                    <label class="col-form-label" for="country">Країна</label>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Україна"
+                           id="country"
+                           name="country"
+                           value="@Html.Raw(Context.Request.Query["country"])">
                 </div>
-                <div class="form-group">
-                    <label for="city">City</label>
-                    <input type="text" class="form-control" id="city" name="city" value="@Html.Raw(Context.Request.Query["city"])">
+                @*City*@
+                <div class="form-group mb-3">
+                    <label class="col-form-label" for="city">Місто</label>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Одеса"
+                           id="city"
+                           name="city"
+                           value="@Html.Raw(Context.Request.Query["city"])">
                 </div>
+                @*Price*@
                 <div class="form-group">
-                    <label for="price">Price</label>
-                    <input type="number" class="form-control" id="price" name="price" value="@Html.Raw(Context.Request.Query["price"])">
+                    <label>Ціна за добу:</label>
+                    <div class="row">
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number"
+                                       class="form-control text-end"
+                                       aria-label="Minimum price"
+                                       min="0"
+                                       max="999"
+                                       maxlength="3"
+                                       id="minPrice"
+                                       name="minPrice"
+                                       value="@Html.Raw(Context.Request.Query["minPrice"])">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                        <div class="col-auto my-auto">
+                            <h5>-</h5>
+                        </div>
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number"
+                                       class="form-control text-end"
+                                       aria-label="Maximum price"
+                                       min="0"
+                                       max="999"
+                                       id="maxPrice"
+                                       name="maxPrice"
+                                       value="@Html.Raw(Context.Request.Query["maxPrice"])">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="start-date">Start Date</label>
-                    <input type="date" class="form-control" id="start-date" name="startDate" value="@Html.Raw(Context.Request.Query["startDate"])">
+                @*Date Range*@
+                <div class="form-group mb-3">
+                    <label>Дата заїзду:</label>
+                    <div class="input-group date-range">
+                        <input type="text"
+                               class="form-control date-range"
+                               id="daterange"
+                               name="daterange"
+                               value="@Html.Raw(Context.Request.Query["daterange"])">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="end-date">End Date</label>
-                    <input type="date" class="form-control" id="end-date" name="endDate" value="@Html.Raw(Context.Request.Query["endDate"])">
+                @*Room number*@
+                <div class="form-group mb-3">
+                    <label for="room-number">Кількість кімнат</label>
+                    <input type="number" 
+                           class="form-control" 
+                           id="room-number" 
+                           name="roomNumber" 
+                           min="1"
+                           max="99"
+                           value="@Html.Raw(Context.Request.Query["roomNumber"])">
                 </div>
-                <div class="form-group">
-                    <label for="room-number">Room Number</label>
-                    <input type="number" class="form-control" id="room-number" name="roomNumber" value="@Html.Raw(Context.Request.Query["roomNumber"])">
+                @*Кількість спальних місць*@
+                <div class="form-group mb-3">
+                    <label for="sleeping-places-number">Кількість спальних місць</label>
+                    <input type="number" 
+                           class="form-control" 
+                           id="sleeping-places-number" 
+                           name="sleepingPlacesNumber" 
+                           min="1"
+                           max="99"
+                           value="@Html.Raw(Context.Request.Query["sleepingPlacesNumber"])">
                 </div>
-                <div class="form-group">
-                    <label for="sleeping-places-number">Sleeping Places Number</label>
-                    <input type="number" class="form-control" id="sleeping-places-number" name="sleepingPlacesNumber" value="@Html.Raw(Context.Request.Query["sleepingPlacesNumber"])">
-                </div>
-
                 <!-- Add hidden input field for filter button -->
                 <input type="hidden" name="filter" value="true" />
 
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="submit" class="btn btn-primary w-100">Пошук</button>
             </form>
         </div>
         <div class="col-md-8 px-5">
@@ -55,7 +116,7 @@
             {
                 mt = "mt-2"; mb = "mb-5";
                 <div class="alert alert-dismissible alert-success mt-5">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    @*<button type="button" class="btn-close" data-bs-dismiss="alert"></button>*@
                     <strong>Було знайдено @Model.Count() пропозицій по вашому запиту</strong>
                 </div>
             }
