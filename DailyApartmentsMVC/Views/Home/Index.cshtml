@@ -4,6 +4,23 @@
     ViewData["Title"] = "Home Page";
 }
 
+@functions {
+    public object GenerateParamsForController(int page)
+    {
+        return new
+        {
+            country = ViewBag.Country,
+            city = ViewBag.City,
+            minPrice = ViewBag.MinPrice,
+            maxPrice = ViewBag.MaxPrice,
+            daterange = ViewBag.DateRange,
+            roomNumber = ViewBag.RoomNumber,
+            sleepingPlacesNumber = ViewBag.SleepingPlacesNumber,
+            page = page
+        };
+    }
+}
+
 <div class="container" style="max-width: 1200px;">
     <div class="row">
         <div class="col-md-4 mt-5 px-5 card border-primary" style="min-width: fit-content; height: fit-content;">
@@ -16,7 +33,7 @@
                            placeholder="Україна"
                            id="country"
                            name="country"
-                           value="@Html.Raw(Context.Request.Query["country"])">
+                           value="@ViewBag.Country">
                 </div>
                 @*City*@
                 <div class="form-group mb-3">
@@ -26,7 +43,7 @@
                            placeholder="Одеса"
                            id="city"
                            name="city"
-                           value="@Html.Raw(Context.Request.Query["city"])">
+                           value="@ViewBag.City">
                 </div>
                 @*Price*@
                 <div class="form-group">
@@ -43,7 +60,7 @@
                                        maxlength="3"
                                        id="minPrice"
                                        name="minPrice"
-                                       value="@Html.Raw(Context.Request.Query["minPrice"])">
+                                       value="@ViewBag.MinPrice">
                                 <span class="input-group-text">.00</span>
                             </div>
                         </div>
@@ -60,7 +77,7 @@
                                        max="999"
                                        id="maxPrice"
                                        name="maxPrice"
-                                       value="@Html.Raw(Context.Request.Query["maxPrice"])">
+                                       value="@ViewBag.MaxPrice">
                                 <span class="input-group-text">.00</span>
                             </div>
                         </div>
@@ -74,7 +91,7 @@
                                class="form-control date-range"
                                id="daterange"
                                name="daterange"
-                               value="@Html.Raw(Context.Request.Query["daterange"])">
+                               value="@ViewBag.DateRange">
                     </div>
                 </div>
                 @*Room number*@
@@ -86,7 +103,7 @@
                            name="roomNumber" 
                            min="1"
                            max="99"
-                           value="@Html.Raw(Context.Request.Query["roomNumber"])">
+                           value="@ViewBag.RoomNumber">
                 </div>
                 @*Кількість спальних місць*@
                 <div class="form-group mb-3">
@@ -97,7 +114,7 @@
                            name="sleepingPlacesNumber" 
                            min="1"
                            max="99"
-                           value="@Html.Raw(Context.Request.Query["sleepingPlacesNumber"])">
+                           value="@ViewBag.SleepingPlacesNumber">
                 </div>
                 <!-- Add hidden input field for filter button -->
                 <input type="hidden" name="filter" value="true" />
@@ -117,7 +134,7 @@
                 mt = "mt-2"; mb = "mb-5";
                 <div class="alert alert-dismissible alert-success mt-5">
                     @*<button type="button" class="btn-close" data-bs-dismiss="alert"></button>*@
-                    <strong>Було знайдено @Model.Count() пропозицій по вашому запиту</strong>
+                    <strong>Було знайдено @ViewBag.OptionsFound пропозицій по вашому запиту</strong>
                 </div>
             }
 
@@ -154,12 +171,57 @@
                     </div>
                 </div>
             }
+
+            @*Pagination*@
+            <div class="m-auto" style="width: fit-content;">
+                @if (Model.Any())
+                {
+                    <ul class="pagination">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                @Html.ActionLink("«",
+                        "Index",
+                        GenerateParamsForController(1),
+                        new { @class = "page-link" })
+                            </li>
+                        }
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            if (i == ViewBag.CurrentPage)
+                            {
+                                <li class="page-item">
+                                    @Html.ActionLink($"{i}",
+                        "Index",
+                        GenerateParamsForController(i),
+                        new { @class = "page-link active" })
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item">
+                                    @Html.ActionLink($"{i}",
+                        "Index",
+                        GenerateParamsForController(i),
+                        new { @class = "page-link" })
+                                </li>
+
+                            }
+                        }
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                @Html.ActionLink($"»",
+                        "Index",
+                        GenerateParamsForController((int)ViewBag.TotalPages),
+                        new { @class = "page-link" })
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
         </div>
     </div>
+
 </div>
-
-
-
-
-
 

@@ -1,8 +1,10 @@
 ﻿using DailyApartmentsMVC.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Web;
+using System.Xml.Linq;
 
 namespace DailyApartmentsMVC.Controllers
 {
@@ -18,12 +20,13 @@ namespace DailyApartmentsMVC.Controllers
         }
 
         public IActionResult Index(string country, 
-                                   string city, 
-                                   int? minPrice,
-                                   int? maxPrice,
-                                   string? daterange,
-                                   int? roomNumber, 
-                                   int? sleepingPlacesNumber)
+                                    string city, 
+                                    int? minPrice,
+                                    int? maxPrice,
+                                    string? daterange,
+                                    int? roomNumber, 
+                                    int? sleepingPlacesNumber,
+                                    int page = 1)
         {
             var properties = _context.Properties.Include(a => a.PropertyOwner);
 
@@ -44,10 +47,28 @@ namespace DailyApartmentsMVC.Controllers
                 (!maxPrice.HasValue || p.Price <= maxPrice) &&
                 (!roomNumber.HasValue || p.RoomNumber >= roomNumber) &&
                 (!sleepingPlacesNumber.HasValue || p.SleepingPlaceNumber >= sleepingPlacesNumber));
-                //(!startDate.HasValue || p. >= startDate) &&
-                //(!endDate.HasValue || p.EndDate <= endDate));
+            //(!startDate.HasValue || p. >= startDate) &&
+            //(!endDate.HasValue || p.EndDate <= endDate));
 
-            return View(filteredProperties);
+
+            // Implement pagination
+            int pageSize = 5;
+            var model = filteredProperties.Skip((page - 1) * pageSize).Take(pageSize);
+            
+
+            // Retrieve form values from query string
+            ViewBag.Country = country;
+            ViewBag.City = city;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+            ViewBag.DateRange = daterange;
+            ViewBag.RoomNumber = roomNumber;
+            ViewBag.SleepingPlacesNumber = sleepingPlacesNumber;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)filteredProperties.Count() / pageSize);
+            ViewBag.OptionsFound = filteredProperties.Count();
+
+            return View(model);
         }
 
         #region AutoCompleteActions
