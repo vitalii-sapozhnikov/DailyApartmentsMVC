@@ -1,14 +1,43 @@
-using DailyApartmentsMVC.Models;
+using DailyApartmentsMVC.Models.GuestModel;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<AirbnbContext>(options => options.UseNpgsql(
-        builder.Configuration.GetConnectionString("AirbnbAdmin")
-    ));
+//builder.Services.AddDbContext<AirbnbContext>(options => options.UseNpgsql(
+//        builder.Configuration.GetConnectionString("AirbnbAdmin")
+//    ));
+
+//builder.Services.AddDbContext<GuestContext>();
+builder.Services.AddSingleton<GuestContext>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.Cookie.Name = "AuthCookies";
+        options.Cookie.HttpOnly = false;
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("PropertyOwnerPolicy", policy =>
+    {
+        policy.RequireClaim("UserRole", "PropertyOwner");
+    });
+
+    options.AddPolicy("GuestPolicy", policy =>
+    {
+        policy.RequireClaim("UserRole", "Guest");
+    });
+});
 
 var app = builder.Build();
 
@@ -28,10 +57,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCookiePolicy();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=PropertyOwner}/{action=AddProperty}");
 
 app.Run();

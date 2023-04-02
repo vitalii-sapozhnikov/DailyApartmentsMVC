@@ -58,7 +58,7 @@ $(function () {
     });
 });
 
-
+// Date Range
 $(function () {
     $('#daterange').daterangepicker({
         opens: 'left',
@@ -71,6 +71,72 @@ $(function () {
     });
 });
 
+// Register form switch
+$(function () {
+    $('#isPropertyOwner').change(function () {
+
+        if ($(this).is(':checked')) {
+            $("#isPropertyOwner").val(true);
+
+            $('#property-owner-form').show();
+            $('#guest-form').hide();
+
+            // set required attribute for owner form inputs
+            $('#OwnerName').prop('required', true);
+            $('#OwnerSurname').prop('required', true);
+            $('#OwnerEmail').prop('required', true);
+            $('#OwnerUserName').prop('required', true);
+            $('#OwnerPassword').prop('required', true);
+            $('#OwnerPassportID').prop('required', true);
+            $('#OwnerTaxNumber').prop('required', true);
+            $('#OwnerPhoneNumber').prop('required', true);
+            
+
+            // remove required attribute for guest form inputs
+            $('#Name').prop('required', false);
+            $('#Surname').prop('required', false);
+            $('#Email').prop('required', false);
+            $('#UserName').prop('required', false);
+            $('#Password').prop('required', false);
+            $('#DateOfBirth').prop('required', false);
+        } else {
+            $("#isPropertyOwner").val(false);
+
+            $('#guest-form').show();
+            $('#property-owner-form').hide();
+
+            // set required attribute for guest form inputs
+            $('#Name').prop('required', true);
+            $('#Surname').prop('required', true);
+            $('#Email').prop('required', true);
+            $('#UserName').prop('required', true);
+            $('#Password').prop('required', true);
+
+            // remove required attribute for owner form inputs
+            $('#OwnerName').prop('required', false);
+            $('#OwnerSurname').prop('required', false);
+            $('#OwnerEmail').prop('required', false);
+            $('#OwnerUserName').prop('required', false);
+            $('#OwnerPassword').prop('required', false);
+            $('#OwnerPassportID').prop('required', false);
+            $('#OwnerTaxNumber').prop('required', false);
+            $('#OwnerPhoneNumber').prop('required', false);
+
+        }
+    });
+});
+
+
+$(function () {
+    $('#isPO').change(function () {
+        if ($(this).is(':checked')) {
+            $("#isPO").val(true);
+        }
+        else {
+            $("#isPO").val(false);
+        }
+    });
+});
 
 
 

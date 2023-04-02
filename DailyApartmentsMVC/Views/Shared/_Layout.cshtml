@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,7 +26,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-5">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-controller="TodoTasks" asp-action="Index" style="font-family: 'Abril Fatface', cursive;">
                     Dailyapartments
@@ -33,7 +36,19 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="TodoTasks" asp-action="Index">Головна</a>
                         </li>
+                        @if (User.IsInRole("guest") || User.IsInRole("propertyOwner"))
+                        {
+                            <li>HALLO, @User.FindFirst(ClaimTypes.Name)?.Value</li>
+                        }                        
                     </ul>
+                    @if(!User.IsInRole("guest") && !User.IsInRole("propertyOwner"))
+                    {
+                        <form class="d-flex">
+                            <button type="button" class="btn btn-sm btn-success p-2 mx-3">Зареєструватися</button>
+                            <button type="button" class="btn btn-sm btn-secondary p-2">Увійти</button>
+                        </form>
+                        
+                    }
                 </div>
             </div>
         </nav>

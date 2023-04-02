@@ -1,0 +1,121 @@
+﻿@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="h-100 h-custom">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card rounded-3">
+                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img3.webp"
+                         class="w-100" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;"
+                         alt="Sample photo">
+                    <div class="card-body p-4 p-md-5">
+                        <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Реєстраційна інформація</h3>
+
+                        <form asp-action="Register" method="post" class="px-md-2">
+
+                            <fieldset class="form-group mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="isPropertyOwner" name="isPropertyOwner">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Я власник квартири
+                                    </label>
+                                </div>
+                            </fieldset>
+
+                            @*GUEST FORM*@
+                            <div id="guest-form" class="form-outline mb-2">
+
+                                <div class="row">
+                                    <div class="form-group col">
+                                        <input type="text" class="form-control" id="Name" name="Name" required>
+                                        <label class="form-label" for="Name">Ім'я</label>
+                                    </div>
+
+                                    <div class="form-group col">
+                                        <input type="text" class="form-control" id="Surname" name="Surname" required>
+                                        <label class="form-label" for="Surname">Прізвище</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="Email" name="Email" required>
+                                    <label class="form-label" for="Email">Електронна адреса</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="UserName" name="UserName" required>
+                                    <label class="form-label" for="UserName">Логін (нік-нейм)</label>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <input type="password" class="form-control" id="Password" name="Password" required>
+                                    <label class="form-label" for="Password">Пароль</label>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <input type="date" class="form-control" id="DateOfBirth" name="DateOfBirth">
+                                    <label class="form-label" for="DateOfBirth">Дата народження</label>
+                                </div>
+                            </div>
+
+                            @*OWNER FORM*@
+                            <div id="property-owner-form" class="form-outline mb-2" style="display: none;">
+                                <div class="row">
+                                    <div class="form-group col">
+                                        <input type="text" class="form-control" id="OwnerName" name="OwnerName">
+                                        <label class="form-label" for="OwnerName">Ім'я</label>
+                                    </div>
+
+                                    <div class="form-group col">
+                                        <input type="text" class="form-control" id="OwnerSurname" name="OwnerSurname">
+                                        <label class="form-label" for="OwnerSurname">Прізвище</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="OwnerEmail" name="OwnerEmail">
+                                    <label class="form-label" for="OwnerEmail">Електронна адреса</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="OwnerUserName" name="OwnerUserName">
+                                    <label class="form-label" for="OwnerUserName">Логін (нік-нейм)</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="password" class="form-control" id="OwnerPassword" name="OwnerPassword">
+                                    <label class="form-label" for="OwnerPassword">Пароль</label>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col">
+                                        <input type="text" class="form-control" id="OwnerPassportID" name="OwnerPassportID">
+                                        <label class="form-label" for="OwnerPassportID">Номер паспорта</label>
+                                    </div>
+                                    <div class="form-group col">
+                                        <input type="text" class="form-control" id="OwnerTaxNumber" name="OwnerTaxNumber">
+                                        <label class="form-label" for="OwnerTaxNumber">Податковий номер</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <input type="tel" class="form-control" id="OwnerPhoneNumber" name="OwnerPhoneNumber">
+                                    <label class="form-label" for="OwnerPhoneNumber">Номер телефону</label>
+                                </div>
+
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-lg mb-1 w-100">Зареєструватися</button>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

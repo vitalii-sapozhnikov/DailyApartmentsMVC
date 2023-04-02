@@ -1,0 +1,225 @@
+﻿@model IEnumerable<DailyApartmentsMVC.Models.GuestModel.PropertyList>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@functions {
+    public object GenerateParamsForController(int page)
+    {
+        return new
+        {
+            country = ViewBag.Country,
+            city = ViewBag.City,
+            minPrice = ViewBag.MinPrice,
+            maxPrice = ViewBag.MaxPrice,
+            daterange = ViewBag.DateRange,
+            roomNumber = ViewBag.RoomNumber,
+            sleepingPlacesNumber = ViewBag.SleepingPlacesNumber,
+            page = page
+        };
+    }
+}
+
+<div class="container" style="max-width: 1200px;">
+    <div class="row">
+        <div class="col-md-4 mt-5 px-5 card border-primary" style="min-width: fit-content; height: fit-content;">
+            <form method="get" action="@Url.Action("Index")"  class="mt-4 mb-4">
+                @*Country*@
+                <div class="form-group mb-3">
+                    <label class="col-form-label" for="country">Країна</label>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Україна"
+                           id="country"
+                           name="country"
+                           value="@ViewBag.Country">
+                </div>
+                @*City*@
+                <div class="form-group mb-3">
+                    <label class="col-form-label" for="city">Місто</label>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Одеса"
+                           id="city"
+                           name="city"
+                           value="@ViewBag.City">
+                </div>
+                @*Price*@
+                <div class="form-group">
+                    <label>Ціна за добу:</label>
+                    <div class="row">
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number"
+                                       class="form-control text-end"
+                                       aria-label="Minimum price"
+                                       min="0"
+                                       max="999"
+                                       maxlength="3"
+                                       id="minPrice"
+                                       name="minPrice"
+                                       value="@ViewBag.MinPrice">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                        <div class="col-auto my-auto">
+                            <h5>-</h5>
+                        </div>
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">$</span>
+                                <input type="number"
+                                       class="form-control text-end"
+                                       aria-label="Maximum price"
+                                       min="0"
+                                       max="999"
+                                       id="maxPrice"
+                                       name="maxPrice"
+                                       value="@ViewBag.MaxPrice">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*Date Range*@
+                <div class="form-group mb-3">
+                    <label>Дата заїзду:</label>
+                    <div class="input-group date-range">
+                        <input type="text"
+                               class="form-control date-range"
+                               id="daterange"
+                               name="daterange"
+                               value="@ViewBag.DateRange">
+                    </div>
+                </div>
+                @*Room number*@
+                <div class="form-group mb-3">
+                    <label for="room-number">Кількість кімнат</label>
+                    <input type="number" 
+                           class="form-control" 
+                           id="room-number" 
+                           name="roomNumber" 
+                           min="1"
+                           max="99"
+                           value="@ViewBag.RoomNumber">
+                </div>
+                @*Кількість спальних місць*@
+                <div class="form-group mb-3">
+                    <label for="sleeping-places-number">Кількість спальних місць</label>
+                    <input type="number" 
+                           class="form-control" 
+                           id="sleeping-places-number" 
+                           name="sleepingPlacesNumber" 
+                           min="1"
+                           max="99"
+                           value="@ViewBag.SleepingPlacesNumber">
+                </div>
+                <!-- Add hidden input field for filter button -->
+                <input type="hidden" name="filter" value="true" />
+
+                <button type="submit" class="btn btn-primary w-100">Пошук</button>
+            </form>
+        </div>
+        <div class="col-md-8 px-5">
+            <!-- Dynamic margin top and margin bottom for cards -->
+            @{
+                string mt = "mt-5", mb = "mb-3";
+            }
+
+            <!-- Show message if filter button was clicked -->
+            @if (Context.Request.Query.ContainsKey("filter"))
+            {
+                mt = "mt-2"; mb = "mb-5";
+                    <div class="alert alert-dismissible alert-success mt-5">
+                    @*<button type="button" class="btn-close" data-bs-dismiss="alert"></button>*@
+                        <strong>Було знайдено @ViewBag.OptionsFound пропозицій по вашому запиту</strong>
+                    </div>
+            }
+
+            @foreach (var item in Model)
+            {
+                    <div class="card @mb @mt">
+                        <h3 class="card-header">@item.Title</h3>
+                        <div class="card-body">
+                            <h5 class="card-title">@item.City, @item.Country</h5>
+                        </div>
+                        <img src=@item.PhotoLinks[0] class="img-fluid" alt="Responsive image">
+                        <div class="card-body">
+                            <p class="card-text">@item.Description</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                            @{
+                                string rooms = "кімната"; if (item.RoomNumber > 1) rooms = "кімнати";
+                                if (item.RoomNumber > 4) rooms = "кімнат";
+                                string beds = "спальне місце"; if (item.SleepingPlaceNumber > 1) beds = $"спальних місця";
+                                if (item.SleepingPlaceNumber > 4) beds = $"спальних місць";
+                            }
+                            @item.RoomNumber @rooms, @item.SleepingPlaceNumber @beds
+                            </li>
+                            <li class="list-group-item">вул. @item.Street, @item.House</li>
+                            <li class="list-group-item">$@item.Price</li>
+                        </ul>
+                    @* <div class="card-body">
+                <a href="#" class="card-link">Card link</a>
+                <a href="#" class="card-link">Another link</a>
+                </div> *@
+                        <div class="card-footer text-muted">
+                        @item.PublicationDate.ToString()
+                        </div>
+                    </div>
+            }
+
+            @*Pagination*@
+            <div class="m-auto" style="width: fit-content;">
+                @if (Model.Any())
+                {
+                        <ul class="pagination">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                                    <li class="page-item">
+                                @Html.ActionLink("«",
+                        "Index",
+                        GenerateParamsForController(1),
+                        new { @class = "page-link" })
+                                    </li>
+                        }
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            if (i == ViewBag.CurrentPage)
+                            {
+                                            <li class="page-item">
+                                    @Html.ActionLink($"{i}",
+                        "Index",
+                        GenerateParamsForController(i),
+                        new { @class = "page-link active" })
+                                            </li>
+                            }
+                            else
+                            {
+                                            <li class="page-item">
+                                    @Html.ActionLink($"{i}",
+                        "Index",
+                        GenerateParamsForController(i),
+                        new { @class = "page-link" })
+                                            </li>
+
+                            }
+                        }
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                                    <li class="page-item">
+                                @Html.ActionLink($"»",
+                        "Index",
+                        GenerateParamsForController((int)ViewBag.TotalPages),
+                        new { @class = "page-link" })
+                                    </li>
+                        }
+                        </ul>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>

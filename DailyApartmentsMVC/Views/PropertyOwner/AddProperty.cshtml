@@ -1,0 +1,65 @@
+﻿@model DailyApartmentsMVC.Models.OwnerModel.AddProperty
+
+<h2>Add Property</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddProperty" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Title</label>
+                <input class="form-control" asp-for="Title" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <input class="form-control" asp-for="Description" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Number of Rooms</label>
+                <input class="form-control" asp-for="RoomNumber" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Number of Sleeping Places</label>
+                <input class="form-control" asp-for="SleepingPlaceNumber" />
+            </div>
+
+            <div class="form-group">
+                <label for="formFileMultiple" class="form-label">Photo Links</label>
+                <input class="form-control" asp-for="Photo" id="formFileMultiple" multiple/>
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input class="form-control" asp-for="Price" />
+            </div>
+            <div class="form-group">
+                <label>Country</label>
+                <input class="form-control" asp-for="Country" />
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input class="form-control" asp-for="City" />
+            </div>
+            <div class="form-group">
+                <label>Street</label>
+                <input class="form-control" asp-for="Street" />
+            </div>
+            <div class="form-group">
+                <label>House Number</label>
+                <input class="form-control" asp-for="House" />
+            </div>
+
+            @*house, flat, chalet*@
+            <div class="form-group">
+                <label>Type</label>
+                <input class="form-control" asp-for="Type" />
+            </div>
+            <div class="form-group">
+                <label>Minimum Rental Days</label>
+                <input class="form-control" asp-for="MinRentalDays" />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Property</button>
+        </form>
+    </div>
+</div>
+
+
