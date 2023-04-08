@@ -1,63 +1,88 @@
 ﻿@model DailyApartmentsMVC.Models.OwnerModel.AddProperty
 
-<h2>Add Property</h2>
-<hr />
 
-<div class="row">
-    <div class="col-md-4">
+<div class="container mb-5" style="max-width: 1200px;">
+
+    <h2 class="mt-4 w-75 m-auto">Додати оголошення</h2>
+
+    <div class="mt-4 px-5 py-4 card border-primary w-75 m-auto" style="min-width: fit-content; height: fit-content;">
+
         <form asp-action="AddProperty" enctype="multipart/form-data">
-            <div class="form-group">
-                <label class="form-label">Title</label>
-                <input class="form-control" asp-for="Title" />
-            </div>
-            <div class="form-group">
-                <label class="form-label">Description</label>
-                <input class="form-control" asp-for="Description" />
-            </div>
-            <div class="form-group">
-                <label class="form-label">Number of Rooms</label>
-                <input class="form-control" asp-for="RoomNumber" />
-            </div>
-            <div class="form-group">
-                <label class="form-label">Number of Sleeping Places</label>
-                <input class="form-control" asp-for="SleepingPlaceNumber" />
-            </div>
 
             <div class="form-group">
-                <label for="formFileMultiple" class="form-label">Photo Links</label>
-                <input class="form-control" asp-for="Photo" id="formFileMultiple" multiple/>
+                <input class="form-control" asp-for="Title" required />
+                <label class="form-label">Назва</label>
             </div>
             <div class="form-group">
-                <label>Price</label>
-                <input class="form-control" asp-for="Price" />
-            </div>
-            <div class="form-group">
-                <label>Country</label>
-                <input class="form-control" asp-for="Country" />
-            </div>
-            <div class="form-group">
-                <label>City</label>
-                <input class="form-control" asp-for="City" />
-            </div>
-            <div class="form-group">
-                <label>Street</label>
-                <input class="form-control" asp-for="Street" />
-            </div>
-            <div class="form-group">
-                <label>House Number</label>
-                <input class="form-control" asp-for="House" />
+                <textarea class="form-control" asp-for="Description" rows="3" required></textarea>
+                <label class="form-label">Опис</label>
             </div>
 
-            @*house, flat, chalet*@
-            <div class="form-group">
-                <label>Type</label>
-                <input class="form-control" asp-for="Type" />
+            <div class="row mt-3">
+                <div class="form-group col">
+                    <input type="number" class="form-control" asp-for="RoomNumber" min="1" max="100" value="1" required />
+                    <label class="form-label">Кількість кімнат</label>
+                </div>
+                <div class="form-group col">
+                    <input type="number" class="form-control" asp-for="SleepingPlaceNumber" min="1" max="100" value="1" required />
+                    <label class="form-label">Кількість ліжок</label>
+                </div>
+                <div class="form-group col">
+                    <input type="number" step="1" class="form-control" asp-for="Price" min="1" max="999" required />
+                    <label>Ціна за добу</label>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Minimum Rental Days</label>
-                <input class="form-control" asp-for="MinRentalDays" />
+
+            <div class="form-group mb-3">
+                <!-- actual upload which is hidden -->
+                <input type="file" asp-for="Photo" multiple id="actual-btn" hidden required />
+
+                <!-- our custom upload button -->
+                <label id="lb" for="actual-btn">Оберіть фотографії</label>
+
+                <!-- name of file chosen -->
+                <span id="file-chosen">Не вибрано</span>
             </div>
-            <button type="submit" class="btn btn-primary">Add Property</button>
+
+            <div class="row mb-2">
+                <div class="form-group col">
+                    <input type="text" class="form-control" asp-for="Country" required />
+                    <label>Країна</label>
+                </div>
+                <div class="form-group col">
+                    <input type="text" class="form-control" asp-for="City" required />
+                    <label>Місто</label>
+                </div>
+                <div class="form-group col">
+                    <input type="text" class="form-control" asp-for="Street" required />
+                    <label>Вулиця</label>
+                </div>
+            </div>
+
+            <div class="row align-items-end mb-5">
+                <div class="form-group col">
+                    <input class="form-control" asp-for="House" required />
+                    <label>Будинок</label>
+                </div>
+
+                @*house, flat, chalet*@
+                <div class="form-group col">
+                    <select class="form-select" id="propType" asp-for="Type" required>
+                        <option selected value="flat">Квартира</option>
+                        <option value="house">Будинок</option>
+                        <option value="chalet">Шале</option>
+                    </select>
+                    <label for="propType">Оберіть тип</label>
+                </div>
+
+                <div class="form-group col">
+                    <input type="number" value="1" min="1" max="100" class="form-control" asp-for="MinRentalDays" required />
+                    <label>Мінімальна тривалість</label>
+
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Add Property</button>
         </form>
     </div>
 </div>

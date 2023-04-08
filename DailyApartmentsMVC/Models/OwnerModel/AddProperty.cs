@@ -28,20 +28,16 @@ namespace DailyApartmentsMVC.Models.OwnerModel
         [Display(Name = "Оберіть фотографії")]
         public IFormFile[]? Photo { get; set; }
 
-        [Required]
         public decimal Price { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Zа-яА-Я]+$", ErrorMessage = "Назва країни може містити лише літери")]
         public string Country { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Zа-яА-Я]+$", ErrorMessage = "Назва міста може містити лише літери")]
 
         public string City { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Zа-яА-Я]+$", ErrorMessage = "Назва вулиці може містити лише літери")]
         public string Street { get; set; }
 
         [Required]

@@ -3,3 +3,12 @@
 *@
 @{
 }
+
+@if (ViewBag.PropertyAdded != null)
+{
+    <div class="alert alert-dismissible alert-success">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <strong>Оголошення було додано!</strong> Ви успішно завантажили оголошення. Дочекайтесь, поки воно пройде верифікацію. Дякуємо!
+    </div>
+}
+

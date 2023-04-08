@@ -3,7 +3,7 @@ $(function () {
     $("#country").autocomplete({
         source: function (request, response) {
             $.ajax({
-                url: "/Home/CountryAutoComplete",
+                url: "/Guest/CountryAutoComplete",
                 dataType: "json",
                 data: {
                     search: request.term
@@ -33,7 +33,7 @@ $(function () {
     $("#city").autocomplete({
         source: function (request, response) {
             $.ajax({
-                url: "/Home/CityAutoComplete",
+                url: "/Guest/CityAutoComplete",
                 dataType: "json",
                 data: {
                     search: request.term
@@ -140,3 +140,13 @@ $(function () {
 
 
 
+const actualBtn = document.getElementById('actual-btn');
+
+const fileChosen = document.getElementById('file-chosen');
+
+actualBtn.addEventListener('change', function () {
+    if (this.files.length == 1)
+        fileChosen.textContent = this.files[0].name
+    else
+        fileChosen.textContent = `${this.files.length} фотографії`
+})

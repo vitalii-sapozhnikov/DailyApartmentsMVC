@@ -64,8 +64,9 @@ namespace DailyApartmentsMVC.Controllers
             }
 
 
-            var commandText = "CALL sp_add_property(@p0, @p1, @p2, @p3, ARRAY[@p4], @p5, @p6, @p7, @p8, @p9, @p10, @p11)";
-            AppSettings.AppSettings.ownerContext.Database.ExecuteSqlRaw(commandText,
+            var commandText = "CALL sp_add_property(@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11)";
+
+            AppSettings.AppSettings.ownerContext?.Database.ExecuteSqlRaw(commandText,
                 new object[] {
                     model.Title, model.Description, model.RoomNumber, model.SleepingPlaceNumber,
                     imageUrl, model.Price, model.Country, model.City, model.Street, model.House,
@@ -74,7 +75,8 @@ namespace DailyApartmentsMVC.Controllers
 
 
             // Redirect to a success page
-            return RedirectToAction("Success");
+            ViewBag.PropertyAdded = true;
+            return RedirectToAction("Index");
         }
 
 

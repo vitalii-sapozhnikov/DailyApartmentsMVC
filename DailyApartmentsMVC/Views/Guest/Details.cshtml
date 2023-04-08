@@ -1,0 +1,179 @@
+﻿@model List<DailyApartmentsMVC.Models.GuestModel.PropertyDetails>
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container mt-4" style="max-width: 1200px;">
+    <a href="javascript:history.back()">
+        <span><</span><span class="mx-3">Назад</span>
+    </a>
+    <div class="row">
+        <div class="col-8 pl-5">
+            @*CAROUSEL*@
+            <div id="carouselExampleIndicators" class="carousel slide mt-4 mx-auto" data-bs-ride="true">
+                <div class="carousel-indicators">
+                    @for (int i = 0; i < Model.First().PhotoLinks.Count(); i++)
+                    {
+                        string tmp = i == 0 ? "active" : "";
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" class="@tmp" aria-current="true" aria-label="Slide @i"></button>
+                    }
+                </div>
+                <div class="carousel-inner">
+                    @for (int i = 0; i < Model.First().PhotoLinks.Count(); i++)
+                    {
+                        string tmp = i == 0 ? "active" : "";
+                        <div class="carousel-item @tmp">
+                            <img src="@Model.First().PhotoLinks[i]" class="d-block w-100" alt="@i">
+                        </div>
+                    }
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+            <div class="details-text mt-4 p-4" style="background-color: #FFFFFF;">
+                <p class="text-muted">Опубліковано @Model.First().PublicationDate.ToString("D")</p>
+                <h2 class="">@Model.First().Title</h2>
+
+                <h1 class="mt-4 fw-bolder text-success">$ @Model.First().Price</h1>
+
+                <h5 class="mt-4">ОПИС</h5>
+
+                <p>@Model.First().Description</p>
+
+            </div>
+
+            <div class="mt-4 p-4" style="background-color: #FFFFFF;">
+                <h5 class="mt-1 mb-4">ВІДГУКИ</h5>
+                @{
+                    var comments = Model.Where(c => c.Comment != null)
+                    .Select(m => new { m.Comment, m.ReviewGuestName, m.ReviewGuestSurname })
+                    .Distinct();
+                }
+                @if (comments.Count() == 0)
+                {
+                    <p>Немає жодного відгуку</p>
+                }
+                else
+                {
+                    foreach (var c in comments)
+                    {
+                        <figure class="mb-3">
+                            <blockquote class="blockquote">
+                                <p class="mb-0" style="font-size: 0.9em;">@c.Comment</p>
+                            </blockquote>
+                            <figcaption class="blockquote-footer mt-1">
+                                <cite title="Source Title">@c.ReviewGuestName @c.ReviewGuestSurname</cite>
+                            </figcaption>
+                        </figure>
+                    }
+                }
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="mt-4 p-3" style="background-color: #FFFFFF;">
+                <h6 class="text-muted">КОРИСТУВАЧ</h6>
+                <h5 class="mt-3">@Model.First().OwnerName @Model.First().OwnerSurname</h5>
+                <p class="mt-2 text-success">3 успішних угоди</p>
+            </div>
+
+            <div class="mt-2 p-3" style="background-color: #FFFFFF;">
+                <h6 class="text-muted mb-3">РЕЙТИНГ</h6>
+                @{
+                    var groupedRatings = @Model
+                    .GroupBy(r => r.RatingAttribute)
+                    .Select(g => new
+                    {
+                        Category = g.Key,
+                        AverageRating = g.Average(r => r.Rating)
+                    }).ToList();
+                }
+                @if (@Model.Count == 1)
+                {
+                    <p>Немає жодного відгуку</p>
+                }
+                else
+                {
+                    <table>
+                        @foreach (var rating in groupedRatings.Take(groupedRatings.Count() - 1))
+                        {
+                            if (rating.AverageRating != null)
+                            {
+                                <tr>
+                                    <td>@rating.Category:</td>
+                                    <td style="padding-left: 1.5rem;">
+                                        @String.Format("{0:0.0}", rating.AverageRating)
+                                        @for (int j = 0; j < (int)rating.AverageRating; j++)
+                                        {
+                                            <span style="font-size: 1rem; letter-spacing: -0.35rem;">🟊</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                }
+            </div>
+
+            <div class="mt-2 p-3" style="background-color: #FFFFFF;">
+                <h6 class="text-muted">МІСЦЕЗНАХОДЖЕННЯ</h6>
+                <div class="d-flex align-items-center">
+                    <img src="https://i.ibb.co/zPpxgwp/image-2023-04-08-21-01-19.png" width="25" />
+                    <p class="mt-3" style="margin-left: 2em;">
+                        @Model.First().Country, @Model.First().City, вул. @Model.First().Street,
+                        @Model.First().House
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-2 p-3" style="background-color: #FFFFFF;">
+                <button type="button" class="btn btn-success w-100">забронювати</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+@*<div class="card-body d-flex align-items-center justify-content-between">
+    <h5 class="card-title">@item.City, @item.Country</h5>
+    <h5 class="d-flex align-items-center">@String.Format("{0:0.0}", item.Rating) <span class="star-review">🟊</span></h5>
+
+    </div>
+    <img src=@item.PhotoLinks[0] class="img-fluid" alt="Responsive image">
+    <div class="card-body">
+    <p class="card-text">@item.Description</p>
+    </div>
+    <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+    @{
+    string rooms = "кімната"; if (item.RoomNumber > 1) rooms = "кімнати";
+    if (item.RoomNumber > 4) rooms = "кімнат";
+    string beds = "спальне місце"; if (item.SleepingPlaceNumber > 1) beds = $"спальних місця";
+    if (item.SleepingPlaceNumber > 4) beds = $"спальних місць";
+    }
+    @item.RoomNumber @rooms, @item.SleepingPlaceNumber @beds
+    </li>
+    <li class="list-group-item">вул. @item.Street, @item.House</li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <h5 class="text-success">$ @item.Price</h5>
+    <div class="d-flex">
+    <a asp-action="Details"
+    class="btn btn-primary py-2 px-5"
+    asp-route-id="@item.Id">Деталі</a>
+    </div>
+    </li>
+
+    </ul>
+
+    <div class="card-footer text-muted">
+    @item.PublicationDate.ToString()
+    </div>*@
+</div>

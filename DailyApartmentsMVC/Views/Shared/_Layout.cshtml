@@ -33,21 +33,48 @@
                 </a>
                 <div class="collapse navbar-collapse" id="navbarColor01">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="TodoTasks" asp-action="Index">Головна</a>
-                        </li>
-                        @if (User.IsInRole("guest") || User.IsInRole("propertyOwner"))
+                          
+                        
+                        @if(User.IsInRole("guest"))
                         {
-                            <li>HALLO, @User.FindFirst(ClaimTypes.Name)?.Value</li>
-                        }                        
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Guest" asp-action="Search">Пошук</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Guest" asp-action="Bookings">Мої бронювання</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("propertyOwner"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="PropertyOwner" asp-action="AddProperty">Додати оголошення</a>
+                            </li>
+                        }
+
                     </ul>
                     @if(!User.IsInRole("guest") && !User.IsInRole("propertyOwner"))
                     {
                         <form class="d-flex">
-                            <button type="button" class="btn btn-sm btn-success p-2 mx-3">Зареєструватися</button>
-                            <button type="button" class="btn btn-sm btn-secondary p-2">Увійти</button>
+                            <a asp-action="Register" 
+                               asp-controller="Account"
+                               class="btn btn-sm btn-success p-2 mx-3">Зареєструватися</a>
+
+                            <a asp-action="Login" 
+                               asp-controller="Account" 
+                               class="btn btn-sm btn-secondary p-2">Увійти</a>
+
                         </form>
-                        
+
+                    }
+                    else
+                    {
+                        <form class="d-flex align-items-center">
+                           <h5 class="p-2 mx-3" style="color: #FFF;">@User.FindFirst(ClaimTypes.Name)?.Value</h5>
+                           <a asp-action="Logout"
+                              asp-controller="Account">
+                                <img src="https://i.ibb.co/VLxqpdC/icons8-logout-50.png" width="30" />
+                           </a>
+                        </form>
                     }
                 </div>
             </div>

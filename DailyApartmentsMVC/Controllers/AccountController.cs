@@ -84,7 +84,7 @@ namespace DailyApartmentsMVC.Controllers
                             await command.ExecuteNonQueryAsync();
                         }
                     }
-                    return RedirectToAction("Index", "Guest");
+                    return RedirectToAction("Search", "Guest");
                 }
             }
             return View();
@@ -183,12 +183,19 @@ namespace DailyApartmentsMVC.Controllers
                 // Sign in user
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
 
-                return RedirectToAction("Index", "Guest");
+                return RedirectToAction("Search", "Guest");
             }
 
             // If user does not exist or password is incorrect, display error message
             ModelState.AddModelError("", "Invalid email or password");
             return View();
         }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
+        }
+
     }
 }

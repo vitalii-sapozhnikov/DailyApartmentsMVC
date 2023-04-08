@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using DailyApartmentsMVC.Models.GuestModel;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace DailyApartmentsMVC.Models.GuestModel;
@@ -16,6 +18,9 @@ public partial class GuestContext : DbContext
     }
 
     public virtual DbSet<PropertyList> PropertyLists { get; set; }
+    public DbSet<PropertyDetails> PropertyDetails { get; set; }
+    public virtual DbSet<BookingsArchive> BookingsArchives { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,10 +60,73 @@ public partial class GuestContext : DbContext
             entity.Property(e => e.Type)
                 .HasColumnType("character varying")
                 .HasColumnName("type");
+
+        });
+
+
+
+
+        modelBuilder
+        .Entity<PropertyDetails>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.Property(e => e.Title).HasColumnName("title");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.RoomNumber).HasColumnName("room_number");
+            entity.Property(e => e.SleepingPlaceNumber).HasColumnName("sleeping_place_number");
+            entity.Property(e => e.PhotoLinks).HasColumnName("photo_links");
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Type).HasColumnName("type");
+            entity.Property(e => e.PublicationDate).HasColumnName("publication_date");
+            entity.Property(e => e.Country).HasColumnName("country");
+            entity.Property(e => e.City).HasColumnName("city");
+            entity.Property(e => e.Street).HasColumnName("street");
+            entity.Property(e => e.House).HasColumnName("house");
+            entity.Property(e => e.Flat).HasColumnName("flat");
+            entity.Property(e => e.Rating).HasColumnName("rating");
+            entity.Property(e => e.RatingAttribute).HasColumnName("rating_attribute");
+            entity.Property(e => e.Comment).HasColumnName("comment");
+            entity.Property(e => e.ReviewGuestName).HasColumnName("review_guest_name");
+            entity.Property(e => e.ReviewGuestSurname).HasColumnName("review_guest_surname");
+            entity.Property(e => e.OwnerName).HasColumnName("owner_name");
+            entity.Property(e => e.OwnerSurname).HasColumnName("owner_surname");
+        });
+
+
+        modelBuilder.Entity<BookingsArchive>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("bookings_archive");
+
+            entity.Property(e => e.City)
+                .HasColumnType("character varying")
+                .HasColumnName("city");
+            entity.Property(e => e.Country)
+                .HasColumnType("character varying")
+                .HasColumnName("country");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Duration).HasColumnName("duration");
+            entity.Property(e => e.House).HasColumnName("house");
+            entity.Property(e => e.OwnerName)
+                .HasColumnType("character varying")
+                .HasColumnName("owner_name");
+            entity.Property(e => e.OwnerSurname)
+                .HasColumnType("character varying")
+                .HasColumnName("owner_surname");
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Street)
+                .HasColumnType("character varying")
+                .HasColumnName("street");
+            entity.Property(e => e.Title)
+                .HasColumnType("character varying")
+                .HasColumnName("title");
         });
 
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }

@@ -1,0 +1,79 @@
+﻿@model List<DailyApartmentsMVC.Models.GuestModel.BookingsArchive>
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container mt-4">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" data-bs-toggle="tab" href="#active" aria-selected="false" role="tab" tabindex="-1">Активні</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" data-bs-toggle="tab" href="#archive" aria-selected="true" role="tab">Архів</a>
+        </li>
+    </ul>
+    <div id="myTabContent" class="tab-content mt-3">
+        @*ACTIVE*@
+        <div class="tab-pane fade" id="active" role="tabpanel">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Назва</th>
+                        <th scope="col">Дата заселення</th>
+                        <th scope="col">Дата виїзду</th>
+                        <th scope="col">Адреса</th>
+                        <th scope="col">Ім'я власника</th>
+                        <th scope="col">Ціна</th>
+                    </tr>
+                </thead>
+                @foreach (var b in Model)
+                {
+                    DateTime dt = new DateTime(b.Date.Value.Year, b.Date.Value.Month, b.Date.Value.Day, 0, 0, 0, DateTimeKind.Unspecified);
+                    if (DateTime.Now <= dt.AddDays((double)b.Duration))
+                    {
+                        <tr class="table-success">
+                            <td>@b.Title</td>
+                            <td>@dt.ToString("D")</td>
+                            <td>@dt.AddDays((double)b.Duration).ToString("D")</td>
+                            <td>@b.Country, @b.City, @b.Street @b.House</td>
+                            <td>@b.OwnerName @b.OwnerSurname</td>
+                            <td><b>$ @b.Price</b></td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+        @*ARCHIVE*@
+        <div class="tab-pane fade active show" id="archive" role="tabpanel">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Назва</th>
+                        <th scope="col">Дата заселення</th>
+                        <th scope="col">Дата виїзду</th>
+                        <th scope="col">Адреса</th>
+                        <th scope="col">Ім'я власника</th>
+                        <th scope="col">Ціна</th>
+                    </tr>
+                </thead>
+
+                @foreach (var b in Model)
+                {
+                    DateTime dt = new DateTime(b.Date.Value.Year, b.Date.Value.Month, b.Date.Value.Day, 0, 0, 0, DateTimeKind.Unspecified);
+                    if (DateTime.Now > dt.AddDays((double)b.Duration))
+                    {
+                        <tr class="table-primary">
+                            <td>@b.Title</td>
+                            <td>@dt.ToString("D")</td>
+                            <td>@dt.AddDays((double)b.Duration).ToString("D")</td>
+                            <td>@b.Country, @b.City, @b.Street @b.House</td>
+                            <td>@b.OwnerName @b.OwnerSurname</td>
+                            <td><b>$ @b.Price</b></td>
+                        </tr>
+                    }
+                }
+
+            </table>
+        </div>
+    </div>
+</div>

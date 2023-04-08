@@ -3,23 +3,23 @@ using Microsoft.AspNetCore.Authorization;
 using DailyApartmentsMVC.Models;
 using DailyApartmentsMVC.Models.GuestModel;
 using System.Diagnostics;
+using DailyApartmentsMVC.AppSettings;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore;
 
 namespace DailyApartmentsMVC.Controllers
 {
     [Authorize]
     public class GuestController : Controller
     {
-        private GuestContext? _context;
-
         private readonly IServiceProvider _serviceProvider;
 
-        public GuestController(IServiceProvider serviceProvider, GuestContext guestContext)
+        public GuestController(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _context = guestContext;
         }
 
-        public IActionResult Index(string country,
+        public IActionResult Search(string country,
                                     string city,
                                     int? minPrice,
                                     int? maxPrice,
@@ -28,12 +28,7 @@ namespace DailyApartmentsMVC.Controllers
                                     int? sleepingPlacesNumber,
                                     int page = 1)
         {
-            //using var scope = _serviceProvider.CreateScope();
-            //var guestContext = scope.ServiceProvider.GetRequiredService<GuestContext>();
-
             var properties = AppSettings.AppSettings.guestContext.PropertyLists;
-
-            //var properties = _context.PropertyLists;
 
             // daterange will contain the selected date range in the format "DD/MM/YYYY - DD/MM/YYYY"
             DateTime? startDate, endDate;
@@ -76,16 +71,35 @@ namespace DailyApartmentsMVC.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            //var lst = AppSettings.AppSettings.guestContext.GetPropertyDetails(id);
+            var propertyDetails = AppSettings.AppSettings.guestContext.PropertyDetails.FromSqlRaw("SELECT * FROM get_property_details({0})", id).ToList();
+
+
+
+            return View(propertyDetails);
+        }
+
+        [HttpGet]
+        public IActionResult Bookings() 
+        {
+            var bookings_list = AppSettings.AppSettings.guestContext.BookingsArchives.ToList();
+
+            return View(bookings_list);
+        }
+
         #region AutoCompleteActions
         public ActionResult CountryAutoComplete(string search)
         {
-            var data = _context.PropertyLists.GroupBy(p => p.Country).Select(grp => grp.First().Country);
+            var data = AppSettings.AppSettings.guestContext.PropertyLists.GroupBy(p => p.Country).Select(grp => grp.First().Country);
             var result = data.Where(x => x.ToLower().StartsWith(search.ToLower()));
             return Json(result);
         }
         public ActionResult CityAutoComplete(string search)
         {
-            var cities = _context.PropertyLists.GroupBy(p => p.City).Select(grp => grp.First().City).ToList();
+            var cities = AppSettings.AppSettings.guestContext.PropertyLists.GroupBy(p => p.City).Select(grp => grp.First().City).ToList();
             var filteredCities = cities.Where(c => c.ToLower().StartsWith(search.ToLower()));
             return Json(filteredCities);
         }
