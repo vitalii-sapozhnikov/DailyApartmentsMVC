@@ -22,6 +22,7 @@
         public string? ReviewGuestSurname { get; set; }
         public string? OwnerName { get; set; }
         public string? OwnerSurname { get; set; }
+        public long? Deals { get; set; }
     }
 
 }

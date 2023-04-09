@@ -1,11 +1,12 @@
 ﻿@model List<DailyApartmentsMVC.Models.GuestModel.PropertyDetails>
 @{
     ViewData["Title"] = "Details";
+    int propertyId = int.Parse(ViewBag.Id);
 }
 
 <div class="container mt-4" style="max-width: 1200px;">
-    <a href="javascript:history.back()">
-        <span><</span><span class="mx-3">Назад</span>
+    <a class="btn btn-light btn-sm" href="javascript:history.back()">
+        <span><</span><span class="mx-2">Назад</span>
     </a>
     <div class="row">
         <div class="col-8 pl-5">
@@ -80,7 +81,10 @@
             <div class="mt-4 p-3" style="background-color: #FFFFFF;">
                 <h6 class="text-muted">КОРИСТУВАЧ</h6>
                 <h5 class="mt-3">@Model.First().OwnerName @Model.First().OwnerSurname</h5>
-                <p class="mt-2 text-success">3 успішних угоди</p>
+                @{
+                    long deals = @Model.First().Deals ?? 0;
+                }
+                <p class="mt-2 text-success">@deals успішних угод</p>
             </div>
 
             <div class="mt-2 p-3" style="background-color: #FFFFFF;">
@@ -133,47 +137,78 @@
             </div>
 
             <div class="mt-2 p-3" style="background-color: #FFFFFF;">
-                <button type="button" class="btn btn-success w-100">забронювати</button>
+                <h6 class="text-muted">ДЕТАЛІ</h6>
+                <div class="mt-3">
+                    <p style="margin-bottom: 0;">Кількість кімнат: @Model.First().RoomNumber</p>
+                    <p class="mt-1" style="margin-bottom: 0;">Кількість спальних місць: @Model.First().SleepingPlaceNumber</p>
+                </div>
+            </div>
+
+            <div class="mt-2 p-3" style="background-color: #FFFFFF;">
+                <a class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#createBooking">забронювати</a>
+
+
+
+                <div class="modal fade" id="createBooking" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Підтвердження бронювання</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="form-group mb-3">
+                                    <label>Місцезнаходження</label>
+                                    <input type="text" class="form-control" readonly value="@Model.First().Country, @Model.First().City, @Model.First().Street @Model.First().House" />
+                                </div>
+
+                                <div class="form-group mb-3 d-flex justify-content-between">
+                                    <div>
+                                        <label>Кількість кімнат</label>
+                                        <input type="number"
+                                               readonly
+                                               class="form-control"
+                                               value="@Model.First().RoomNumber">
+                                    </div>
+                                    <div>
+                                        <label>Спальних місць</label>
+                                        <input type="number"
+                                               readonly
+                                               class="form-control"
+                                               value="@Model.First().SleepingPlaceNumber">
+                                    </div>
+                                </div>
+
+                                <form method="post" asp-action="CreateBooking">
+                                    @*Date Range*@
+                                    <div class="form-group mb-3">
+                                        <label>Дата заїзду:</label>
+                                        <div class="input-group date-range">
+                                            <input type="text"
+                                                   class="form-control date-range"
+                                                   id="daterange"
+                                                   name="daterange"
+                                                   value="@ViewBag.DateRange">
+                                        </div>
+                                    </div>
+
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                    <a id="create-booking-btn" class="btn btn-success"
+                                       asp-route-id="@propertyId"
+                                       asp-route-date=""
+                                       asp-action="CreateBooking">Бронювати</a>
+
+
+                                </form>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
 
-</div>
-
-
-@*<div class="card-body d-flex align-items-center justify-content-between">
-    <h5 class="card-title">@item.City, @item.Country</h5>
-    <h5 class="d-flex align-items-center">@String.Format("{0:0.0}", item.Rating) <span class="star-review">🟊</span></h5>
-
-    </div>
-    <img src=@item.PhotoLinks[0] class="img-fluid" alt="Responsive image">
-    <div class="card-body">
-    <p class="card-text">@item.Description</p>
-    </div>
-    <ul class="list-group list-group-flush">
-    <li class="list-group-item">
-    @{
-    string rooms = "кімната"; if (item.RoomNumber > 1) rooms = "кімнати";
-    if (item.RoomNumber > 4) rooms = "кімнат";
-    string beds = "спальне місце"; if (item.SleepingPlaceNumber > 1) beds = $"спальних місця";
-    if (item.SleepingPlaceNumber > 4) beds = $"спальних місць";
-    }
-    @item.RoomNumber @rooms, @item.SleepingPlaceNumber @beds
-    </li>
-    <li class="list-group-item">вул. @item.Street, @item.House</li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-    <h5 class="text-success">$ @item.Price</h5>
-    <div class="d-flex">
-    <a asp-action="Details"
-    class="btn btn-primary py-2 px-5"
-    asp-route-id="@item.Id">Деталі</a>
-    </div>
-    </li>
-
-    </ul>
-
-    <div class="card-footer text-muted">
-    @item.PublicationDate.ToString()
-    </div>*@
 </div>

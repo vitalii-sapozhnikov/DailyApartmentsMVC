@@ -91,6 +91,7 @@ public partial class GuestContext : DbContext
             entity.Property(e => e.ReviewGuestSurname).HasColumnName("review_guest_surname");
             entity.Property(e => e.OwnerName).HasColumnName("owner_name");
             entity.Property(e => e.OwnerSurname).HasColumnName("owner_surname");
+            entity.Property(e => e.Deals).HasColumnName("deals");
         });
 
 
@@ -122,6 +123,8 @@ public partial class GuestContext : DbContext
             entity.Property(e => e.Title)
                 .HasColumnType("character varying")
                 .HasColumnName("title");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Id).HasColumnName("id");
         });
 
         OnModelCreatingPartial(modelBuilder);

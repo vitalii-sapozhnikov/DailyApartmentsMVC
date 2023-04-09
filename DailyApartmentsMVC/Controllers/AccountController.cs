@@ -154,22 +154,11 @@ namespace DailyApartmentsMVC.Controllers
                     return View();
                 }
 
-                //DbContextOptions<GuestContext> options = new DbContextOptionsBuilder<GuestContext>()
-                //    .UseNpgsql(connectionString).Options;
-
-
-                //guestContext = new GuestContext(options);
-
-                //guestContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-
 
                 DbContextOptions<GuestContext> options = new DbContextOptionsBuilder<GuestContext>()
                     .UseNpgsql(connectionString).Options;
 
                 AppSettings.AppSettings.guestContext = new GuestContext(options);
-
-
-
 
 
                 var identity = new ClaimsIdentity(new[] {
@@ -186,9 +175,6 @@ namespace DailyApartmentsMVC.Controllers
                 return RedirectToAction("Search", "Guest");
             }
 
-            // If user does not exist or password is incorrect, display error message
-            ModelState.AddModelError("", "Invalid email or password");
-            return View();
         }
 
         public async Task<IActionResult> Logout()

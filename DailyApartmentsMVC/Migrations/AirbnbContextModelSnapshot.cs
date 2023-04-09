@@ -10,7 +10,6 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DailyApartmentsMVC.Migrations
 {
-    [DbContext(typeof(AirbnbContext))]
     partial class AirbnbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

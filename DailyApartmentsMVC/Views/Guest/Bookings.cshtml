@@ -26,18 +26,53 @@
                         <th scope="col">Ціна</th>
                     </tr>
                 </thead>
+                @{int i = 0;}
                 @foreach (var b in Model)
                 {
                     DateTime dt = new DateTime(b.Date.Value.Year, b.Date.Value.Month, b.Date.Value.Day, 0, 0, 0, DateTimeKind.Unspecified);
+                    string disabled = DateTime.Now < dt.AddDays(-1).AddHours(14) ? "" : "disabled";
+                    bool status = b.Status ?? false;
+                    string ttype = status ? "table-success" : "table-danger";
                     if (DateTime.Now <= dt.AddDays((double)b.Duration))
                     {
-                        <tr class="table-success">
+                        <tr class="@ttype">
                             <td>@b.Title</td>
                             <td>@dt.ToString("D")</td>
                             <td>@dt.AddDays((double)b.Duration).ToString("D")</td>
                             <td>@b.Country, @b.City, @b.Street @b.House</td>
                             <td>@b.OwnerName @b.OwnerSurname</td>
                             <td><b>$ @b.Price</b></td>
+                            @if (status)
+                            {
+                                <td>
+                                    @if (DateTime.Now < dt.AddDays(-1).AddHours(14))
+                                    {
+                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="@String.Concat("#cancel", i)">Відмінити</a>
+                                    }
+                                    <div class="modal fade" id="@String.Concat("cancel", i++)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Ви точно бажаєте відмінити бронювання?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Бронювання можна відмінити за 24 години до поселення. Поселення відбувається після 14.00
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                                    <a class="btn btn-danger" asp-action="Cancel" asp-route-id="@b.Id">Відмінити</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            }
+                            else
+                            {
+                                <td>Відмінено</td>
+                            }
                         </tr>
                     }
                 }
@@ -54,21 +89,32 @@
                         <th scope="col">Адреса</th>
                         <th scope="col">Ім'я власника</th>
                         <th scope="col">Ціна</th>
+                        <th scope="col">Статус</th>
                     </tr>
                 </thead>
 
                 @foreach (var b in Model)
                 {
                     DateTime dt = new DateTime(b.Date.Value.Year, b.Date.Value.Month, b.Date.Value.Day, 0, 0, 0, DateTimeKind.Unspecified);
+                    bool status = b.Status ?? false;
+                    string ttype = status ? "table-primary" : "table-danger";
                     if (DateTime.Now > dt.AddDays((double)b.Duration))
                     {
-                        <tr class="table-primary">
+                        <tr class="@ttype">
                             <td>@b.Title</td>
                             <td>@dt.ToString("D")</td>
                             <td>@dt.AddDays((double)b.Duration).ToString("D")</td>
                             <td>@b.Country, @b.City, @b.Street @b.House</td>
                             <td>@b.OwnerName @b.OwnerSurname</td>
                             <td><b>$ @b.Price</b></td>
+                            @if (status)
+                            {
+                                <td>Успішно</td>
+                            }
+                            else
+                            {
+                                <td>Відмінено</td>
+                            }
                         </tr>
                     }
                 }
@@ -77,3 +123,11 @@
         </div>
     </div>
 </div>
+
+
+@*TOOLTIP*@
+<script>
+    $(document).ready(function () {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>

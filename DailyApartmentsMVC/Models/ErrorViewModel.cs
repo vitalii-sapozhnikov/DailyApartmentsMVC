@@ -1,4 +1,4 @@
-namespace DailyApartmentsMVC.Models
+﻿namespace DailyApartmentsMVC.Models
 {
     public class ErrorViewModel
     {

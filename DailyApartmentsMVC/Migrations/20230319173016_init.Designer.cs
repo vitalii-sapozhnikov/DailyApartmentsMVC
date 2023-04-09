@@ -11,7 +11,6 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DailyApartmentsMVC.Migrations
 {
-    [DbContext(typeof(AirbnbContext))]
     [Migration("20230319173016_init")]
     partial class init
     {

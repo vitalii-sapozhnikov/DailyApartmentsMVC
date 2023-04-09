@@ -5,6 +5,8 @@ namespace DailyApartmentsMVC.Models.GuestModel;
 
 public class BookingsArchive
 {
+    public int Id { get; set; }
+
     public string? Title { get; set; }
 
     public DateOnly? Date { get; set; }
@@ -12,6 +14,7 @@ public class BookingsArchive
     public int? Duration { get; set; }
 
     public decimal? Price { get; set; }
+    public bool? Status { get; set; }
 
     public string? Country { get; set; }
 

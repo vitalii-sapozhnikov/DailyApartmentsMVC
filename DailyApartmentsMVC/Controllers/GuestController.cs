@@ -78,7 +78,7 @@ namespace DailyApartmentsMVC.Controllers
             var propertyDetails = AppSettings.AppSettings.guestContext.PropertyDetails.FromSqlRaw("SELECT * FROM get_property_details({0})", id).ToList();
 
 
-
+            ViewBag.Id = $"{id}";
             return View(propertyDetails);
         }
 
@@ -88,6 +88,21 @@ namespace DailyApartmentsMVC.Controllers
             var bookings_list = AppSettings.AppSettings.guestContext.BookingsArchives.ToList();
 
             return View(bookings_list);
+        }
+
+        public IActionResult CreateBooking(int id, string date)
+        {
+
+            return RedirectToAction("Bookings");
+        }
+
+
+        public IActionResult Cancel(int id)
+        {
+            var result = AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolated(
+                $"SELECT cancel_booking({id})");
+
+            return RedirectToAction("Bookings");
         }
 
         #region AutoCompleteActions

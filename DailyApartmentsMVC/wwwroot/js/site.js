@@ -150,3 +150,9 @@ actualBtn.addEventListener('change', function () {
     else
         fileChosen.textContent = `${this.files.length} фотографії`
 })
+
+
+// TOOLTIP
+$(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip()
+})
