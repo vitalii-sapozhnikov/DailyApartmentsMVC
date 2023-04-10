@@ -140,19 +140,17 @@ namespace DailyApartmentsMVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult SendReview(int[] rates, string comment, int id)
+        public IActionResult SendReview(Dictionary<string, int> rates, string comment, int id)
         {
             if(rates != null)
             {
-                for (int i = 0; i < rates.Length; i++)
+                foreach (var r in rates)
                 {
-                    if (rates[i] != 0)
-                    {
-                        var query = FormattableStringFactory.Create($@"INSERT INTO property_review (booking_id, review_attribute_id, value)" +
-                        $"VALUES ({id}, {i + 1}, {rates[i]});");
+                    int attr_id = int.Parse(r.Key.Substring(0, 1)) + 1;
+                    var query = FormattableStringFactory.Create($@"INSERT INTO property_review (booking_id, review_attribute_id, value)" +
+                        $"VALUES ({id}, {attr_id}, {r.Value});");
+                    AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolated(query);
 
-                        AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolated(query);
-                    }
                 }
             }
 

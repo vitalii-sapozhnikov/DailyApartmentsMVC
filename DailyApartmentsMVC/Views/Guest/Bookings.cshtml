@@ -146,6 +146,118 @@
                                 <td>Відмінено</td>
                             }
                             <td class="text-end">
+
+                                @if (status)
+                                {
+                                    <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="@String.Concat("#review", i)">Відгук</a>
+                                }
+                                <div class="modal fade text-start" id="@String.Concat("review", i++)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Залиште відгук</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <form method="post" asp-action="SendReview" asp-route-id="@b.Id">
+                                                    <h5>Рейтинг</h5>
+
+                                                    @if (ViewBag.ReviewAttributes is List<string> lst)
+                                                    {
+
+                                                        List<ShowGuestReview> reviewLst = ViewBag.Reviews as List<ShowGuestReview>;
+                                                        List<ShowGuestComment> comments = ViewBag.Comments as List<ShowGuestComment>;
+                                                        reviewLst = reviewLst?.Where(r => r.BookingId == b.Id).ToList();
+                                                        string com = comments?.FirstOrDefault(c => c.BookingId == b.Id)?.Comment;
+                                                        bool disabled = reviewLst.Count() == 0 ? false : true;
+
+                                                        <table>
+                                                            @for (int j = 0; j < lst.Count(); j++)
+                                                            {
+                                                                int cur = 0;
+                                                                if (reviewLst != null)
+                                                                {
+                                                                    cur = reviewLst.FirstOrDefault(r => r.ReviewAttributeId == j + 1)?.Value ?? 0;
+                                                                }
+
+                                                                <tr>
+                                                                    <td><p style="margin-bottom: 0; margin-right:3em;">@lst[j]</p></td>
+                                                                    <td>
+
+                                                                        <div class="rate">
+                                                                            <input type="radio"
+                                                                   id="star5_@($"{j}_{b.Id}")"
+                                                                   name="rates[@($"{j}_{b.Id}")]"
+                                                                   value="5"
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(cur == 5 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star5_@($"{j}_{b.Id}")" title="text">5 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star4_@($"{j}_{b.Id}")"
+                                                                   name="rates[@($"{j}_{b.Id}")]"
+                                                                   value="4"
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(cur == 4 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star4_@($"{j}_{b.Id}")" title="text">4 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star3_@($"{j}_{b.Id}")"
+                                                                   name="rates[@($"{j}_{b.Id}")]"
+                                                                   value="3"
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(cur == 3 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star3_@($"{j}_{b.Id}")" title="text">3 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star2_@($"{j}_{b.Id}")"
+                                                                   name="rates[@($"{j}_{b.Id}")]"
+                                                                   value="2"
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(cur == 2 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star2_@($"{j}_{b.Id}")" title="text">2 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star1_@($"{j}_{b.Id}")"
+                                                                   name="rates[@($"{j}_{b.Id}")]"
+                                                                   value="1"
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(cur == 1 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star1_@($"{j}_{b.Id}")" title="text">1 star</label>
+
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+
+                                                            }
+                                                        </table>
+
+                                                        <hr>
+                                                        <h5 class="mt-3 mb-2">Коментар</h5>
+                                                        <textarea name="comment"
+                                                      class="form-control w-100 mb-4"
+                                                      rows="3"
+                                                      style="border: 1px solid #ccc;"
+                                                      @(disabled ? "readonly" : "")>@(string.IsNullOrEmpty(com) ? "" : com)</textarea>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                                            @if (!disabled)
+                                                            {
+                                                                <button type="submit" id="send-review-btn" class="btn btn-success">Надіслати</button>
+                                                            }
+                                                        </div>
+                                                    }
+
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
                                 <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="@String.Concat("#details", i)">Деталі</a>
 
                                 <div class="modal fade text-start" id="@String.Concat("details", i)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -207,134 +319,7 @@
                                     </div>
                                 </div>
 
-                                <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="@String.Concat("#review", i)">Відгук</a>
-
-                                <div class="modal fade text-start" id="@String.Concat("review", i++)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Залиште відгук</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-
-                                                <form method="post" asp-action="SendReview" asp-route-id="@b.Id">
-                                                    <h5>Рейтинг</h5>
-
-                                                    @if (ViewBag.ReviewAttributes is List<string> lst)
-                                                    {
-                                                        
-                                                        List<ShowGuestReview> reviewLst = ViewBag.Reviews as List<ShowGuestReview>;
-                                                        reviewLst = reviewLst?.Where(r => r.BookingId == b.Id).ToList();
-                                                        bool disabled = reviewLst.Count() == 0 ? false : true;
-
-                                                        <table>
-                                                            @for (int j = 0; j < lst.Count(); j++)
-                                                            {
-                                                                int cur = 0;
-                                                                if (reviewLst != null)
-                                                                {
-                                                                    cur = reviewLst.FirstOrDefault(r => r.ReviewAttributeId == j + 1)?.Value ?? 0;
-                                                                }
-
-                                                                <tr>
-                                                                    <td><p style="margin-bottom: 0; margin-right:3em;">@lst[j]</p></td>
-                                                                    <td>
-
-                                                                        <div class="rate">
-                                                                            <input type="radio" 
-                                                                                id="star5_@j" 
-                                                                                name="rates[@j]"
-                                                                                value="5" 
-                                                                                @(disabled ? "disabled" : "") 
-                                                                                @(cur == 5 ? "checked" : "") />
-                                                                            <label class="@(disabled ? "disabled" : "")" for="star5_@j" title="text">5 stars</label>
-
-                                                                            <input type="radio" 
-                                                                                id="star4_@j" 
-                                                                                name="rates[@j]"
-                                                                                value="4" 
-                                                                                @(disabled ? "disabled" : "") 
-                                                                                @(cur == 4 ? "checked" : "") />
-                                                                            <label class="@(disabled ? "disabled" : "")" for="star4_@j" title="text">4 stars</label>
-
-                                                                            <input type="radio" 
-                                                                                id="star3_@j" 
-                                                                                name="rates[@j]"
-                                                                                value="3" 
-                                                                                @(disabled ? "disabled" : "") 
-                                                                                @(cur == 3 ? "checked" : "") />
-                                                                            <label class="@(disabled ? "disabled" : "")" for="star3_@j" title="text">3 stars</label>
-
-                                                                            <input type="radio" 
-                                                                                id="star2_@j" 
-                                                                                name="rates[@j]"
-                                                                                value="2" 
-                                                                                @(disabled ? "disabled" : "")
-                                                                                @(cur == 2 ? "checked" : "") />
-                                                                            <label class="@(disabled ? "disabled" : "")" for="star2_@j" title="text">2 stars</label>
-
-                                                                            <input type="radio" 
-                                                                                id="star1_@j" 
-                                                                                name="rates[@j]" 
-                                                                                value="1" 
-                                                                                @(disabled ? "disabled" : "") 
-                                                                                @(cur == 1 ? "checked" : "") />
-                                                                            <label class="@(disabled ? "disabled" : "")" for="star1_@j" title="text">1 star</label>
-
-                                                                        </div>
-
-
-                                                                        @*<div class="rate">
-                                                                            <input 
-                                                                                   type="radio" id="star5_@j" 
-                                                                                   name="rates[@j]" 
-                                                                                   value="5" />
-                                                                            <label for="star5_@j" title="text">5 stars</label>
-                                                                            <input 
-                                                                                   type="radio" id="star4_@j" 
-                                                                                   name="rates[@j]" 
-                                                                                   value="4" />
-                                                                            <label for="star4_@j" title="text">4 stars</label>
-                                                                            <input 
-                                                                                   type="radio" 
-                                                                                   id="star3_@j" 
-                                                                                   name="rates[@j]" 
-                                                                                   value="3"  />
-                                                                            <label for="star3_@j" title="text">3 stars</label>
-                                                                            <input
-                                                                                   type="radio" 
-                                                                                   id="star2_@j" 
-                                                                                   name="rates[@j]" 
-                                                                                   value="2"  />
-                                                                            <label for="star2_@j" title="text">2 stars</label>
-                                                                            <input 
-                                                                                   type="radio" 
-                                                                                   id="star1_@j" 
-                                                                                   name="rates[@j]" 
-                                                                                   value="1" />
-                                                                            <label for="star1_@j" title="text">1 star</label>
-                                                                        </div>*@
-                                                                    </td>
-                                                                </tr>
-
-                                                            }
-                                                        </table>
-                                                    }
-                                                    <hr>
-                                                    <h5 class="mt-3 mb-2">Коментар</h5>
-                                                    <textarea name="comment" class="form-control w-100 mb-4" rows="3" style="border: 1px solid #ccc;"></textarea>
-
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
-                                                        <button type="submit" id="send-review-btn" class="btn btn-success">Надіслати</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
+                               
 
                             </td>
                         </tr>
