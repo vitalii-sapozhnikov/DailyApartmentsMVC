@@ -6,6 +6,7 @@ using System.Diagnostics;
 using DailyApartmentsMVC.AppSettings;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace DailyApartmentsMVC.Controllers
 {
@@ -77,7 +78,6 @@ namespace DailyApartmentsMVC.Controllers
             //var lst = AppSettings.AppSettings.guestContext.GetPropertyDetails(id);
             var propertyDetails = AppSettings.AppSettings.guestContext.PropertyDetails.FromSqlRaw("SELECT * FROM get_property_details({0})", id).ToList();
 
-
             ViewBag.Id = $"{id}";
             return View(propertyDetails);
         }
@@ -87,13 +87,47 @@ namespace DailyApartmentsMVC.Controllers
         {
             var bookings_list = AppSettings.AppSettings.guestContext.BookingsArchives.ToList();
 
+            List<string> review_attribute_names = AppSettings.AppSettings.guestContext.ReviewAttributes.Select(a => a.Name).ToList() ?? new List<string>();
+
+            ViewBag.ReviewAttributes = review_attribute_names;
+
+
+            List<ShowGuestComment> comments = AppSettings.AppSettings.guestContext.ShowGuestComments.ToList() ?? new List<ShowGuestComment>();
+            List<ShowGuestReview> reviews = AppSettings.AppSettings.guestContext.ShowGuestReviews.ToList() ?? new List<ShowGuestReview>();
+
+
+            ViewBag.Comments = comments;
+            ViewBag.Reviews = reviews;
+
             return View(bookings_list);
         }
 
-        public IActionResult CreateBooking(int id, string date)
+        [HttpPost]
+        public IActionResult CreateBooking(int id, [FromForm(Name = "daterange")] string daterange)
         {
 
-            return RedirectToAction("Bookings");
+            DateTime startDate = DateTime.Now, endDate = DateTime.Now;
+            if (!string.IsNullOrEmpty(daterange))
+            {
+                string[] dateRangeParts = daterange.Split(" - ");
+                startDate = DateTime.Parse(dateRangeParts[0]);
+                endDate = DateTime.Parse(dateRangeParts[1]);                
+            }
+
+            try
+            {
+                FormattableString sqlQuery = $"CALL create_booking({id}, {DateOnly.FromDateTime(startDate.Date)}, {DateOnly.FromDateTime(endDate.Date)})";
+                AppSettings.AppSettings.guestContext.Database.ExecuteSql(sqlQuery);
+            }
+            catch(Exception ex)
+            {
+                TempData["DateRange"] = daterange;
+                TempData["Error"] = "На жаль ці дати вже зайняті. Оберіть інші";
+                return RedirectToAction("Details", new { id = id });
+            }
+
+            TempData["showToast"] = true;
+            return RedirectToAction("Details", new { id = id});
         }
 
 
@@ -101,6 +135,35 @@ namespace DailyApartmentsMVC.Controllers
         {
             var result = AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolated(
                 $"SELECT cancel_booking({id})");
+
+            return RedirectToAction("Bookings");
+        }
+
+        [HttpPost]
+        public IActionResult SendReview(int[] rates, string comment, int id)
+        {
+            if(rates != null)
+            {
+                for (int i = 0; i < rates.Length; i++)
+                {
+                    if (rates[i] != 0)
+                    {
+                        var query = FormattableStringFactory.Create($@"INSERT INTO property_review (booking_id, review_attribute_id, value)" +
+                        $"VALUES ({id}, {i + 1}, {rates[i]});");
+
+                        AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolated(query);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(comment))
+            {
+                var query = FormattableStringFactory.Create($@"INSERT INTO property_comment (booking_id, comment) " +
+                    $"VALUES ({id}, '{comment}');");
+
+                AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolated(query);
+            }
+
 
             return RedirectToAction("Bookings");
         }

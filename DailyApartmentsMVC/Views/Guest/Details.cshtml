@@ -4,6 +4,32 @@
     int propertyId = int.Parse(ViewBag.Id);
 }
 
+
+@if (TempData.ContainsKey("showToast") && TempData["showToast"] is bool success && success)
+{
+    <div id="toast-container" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-delay="0" data-autohide="false">
+        <div class="toast-header bg-success">
+            <strong class="me-auto" style="color: #FFF;">Ви здійснили бронювання!</strong>
+            <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="toast-body bg-light">
+            Очікуйте, поки власник розгляне ваш запит
+        </div>
+    </div>
+}
+
+<script>
+    $(function () {
+        $('.toast').toast('show');
+    });
+</script>
+
+
+
+
+
 <div class="container mt-4" style="max-width: 1200px;">
     <a class="btn btn-light btn-sm" href="javascript:history.back()">
         <span><</span><span class="mx-2">Назад</span>
@@ -65,6 +91,7 @@
                 {
                     foreach (var c in comments)
                     {
+                        <hr />
                         <figure class="mb-3">
                             <blockquote class="blockquote">
                                 <p class="mb-0" style="font-size: 0.9em;">@c.Comment</p>
@@ -181,7 +208,7 @@
                                     </div>
                                 </div>
 
-                                <form method="post" asp-action="CreateBooking">
+                                <form method="post" asp-route-id="@propertyId" asp-action="CreateBooking">
                                     @*Date Range*@
                                     <div class="form-group mb-3">
                                         <label>Дата заїзду:</label>
@@ -190,19 +217,22 @@
                                                    class="form-control date-range"
                                                    id="daterange"
                                                    name="daterange"
-                                                   value="@ViewBag.DateRange">
+                                                   value="@TempData["DateRange"]">
                                         </div>
                                     </div>
 
+
+                                    @if (TempData.ContainsKey("Error") && TempData["Error"] is string str)
+                                    {
+                                        <p class="text-danger">@str</p>
+                                    }
+
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
-                                    <a id="create-booking-btn" class="btn btn-success"
-                                       asp-route-id="@propertyId"
-                                       asp-route-date=""
-                                       asp-action="CreateBooking">Бронювати</a>
+                                    <button type="submit" id="create-booking-btn" class="btn btn-success">Бронювати</button>
 
 
                                 </form>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,3 +242,14 @@
 
 
 </div>
+
+
+
+@if (TempData.ContainsKey("Error"))
+{
+    <script>
+        $(function () {
+            $('#createBooking').modal('show');
+        });
+    </script>
+}

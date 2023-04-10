@@ -152,7 +152,7 @@ actualBtn.addEventListener('change', function () {
 })
 
 
-// TOOLTIP
-$(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip()
-})
+
+
+
+

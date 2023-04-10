@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DailyApartmentsMVC.Models.GuestModel;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +19,12 @@ public partial class GuestContext : DbContext
     public virtual DbSet<PropertyList> PropertyLists { get; set; }
     public DbSet<PropertyDetails> PropertyDetails { get; set; }
     public virtual DbSet<BookingsArchive> BookingsArchives { get; set; }
+    public virtual DbSet<ReviewAttribute> ReviewAttributes { get; set; }
+    public virtual DbSet<ShowGuestComment> ShowGuestComments { get; set; }
+    public virtual DbSet<ShowGuestReview> ShowGuestReviews { get; set; }
+
+
+
 
 
 
@@ -125,6 +130,40 @@ public partial class GuestContext : DbContext
                 .HasColumnName("title");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Id).HasColumnName("id");
+        });
+
+        modelBuilder.Entity<ReviewAttribute>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("review_attributes");
+
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<ShowGuestComment>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("show_guest_comments");
+
+            entity.Property(e => e.BookingId).HasColumnName("booking_id");
+            entity.Property(e => e.Comment)
+                .HasColumnType("character varying")
+                .HasColumnName("comment");
+        });
+
+        modelBuilder.Entity<ShowGuestReview>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("show_guest_reviews");
+
+            entity.Property(e => e.BookingId).HasColumnName("booking_id");
+            entity.Property(e => e.ReviewAttributeId).HasColumnName("review_attribute_id");
+            entity.Property(e => e.Value).HasColumnName("value");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -14,6 +14,7 @@ public class BookingsArchive
     public int? Duration { get; set; }
 
     public decimal? Price { get; set; }
+
     public bool? Status { get; set; }
 
     public string? Country { get; set; }
