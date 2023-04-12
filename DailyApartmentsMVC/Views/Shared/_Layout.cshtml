@@ -47,6 +47,9 @@
                         @if (User.IsInRole("propertyOwner"))
                         {
                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="PropertyOwner" asp-action="ListProperties">Мої оголошення</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" asp-controller="PropertyOwner" asp-action="AddProperty">Додати оголошення</a>
                             </li>
                         }

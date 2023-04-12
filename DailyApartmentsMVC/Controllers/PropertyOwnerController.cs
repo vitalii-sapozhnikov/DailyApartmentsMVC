@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Diagnostics.Metrics;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace DailyApartmentsMVC.Controllers
 {
@@ -79,6 +80,32 @@ namespace DailyApartmentsMVC.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ListProperties()
+        {
+            var model = AppSettings.AppSettings.ownerContext.PropertyListOwners.ToList();
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeactivateProperty(int id)
+        {
+            FormattableString query = FormattableStringFactory.Create($"SELECT deactivate_property({id});");
+            await AppSettings.AppSettings.ownerContext.Database.ExecuteSqlInterpolatedAsync(query);
+            TempData["Deactivated"] = true;
+            return RedirectToAction("ListProperties");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ActivateProperty(int id)
+        {
+            FormattableString query = FormattableStringFactory.Create($"SELECT activate_property({id});");
+            await AppSettings.AppSettings.ownerContext.Database.ExecuteSqlInterpolatedAsync(query);
+            TempData["Deactivated"] = false;
+            return RedirectToAction("ListProperties");
+        }
 
     }
 }
