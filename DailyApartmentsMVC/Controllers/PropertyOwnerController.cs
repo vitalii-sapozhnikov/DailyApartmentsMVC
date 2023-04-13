@@ -81,6 +81,91 @@ namespace DailyApartmentsMVC.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> EditProperty(int id)
+        {
+            var property = AppSettings.AppSettings.ownerContext.PropertyListOwners.FirstOrDefault(p => p.Id == id);
+
+            var model = new EditProperty
+            {
+                Id = id,
+                Title = property?.Title,
+                Description = property?.Description,
+                RoomNumber = property?.RoomNumber ?? 1,
+                Price = property?.Price ?? 0,
+                SleepingPlaceNumber = property?.SleepingPlaceNumber ?? 1,
+                Country = property?.Country,
+                City = property?.City,
+                Street = property?.Street,
+                House = property?.House ?? 1,
+                Type = property?.Type ?? "Квартира",
+                MinRentalDays = property?.MinRentalDays ?? 1
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProperty(EditProperty property, int id)
+        {
+
+            // Check if the model is valid
+            if (!ModelState.IsValid)
+            {
+                // Return the view with validation errors
+                return View(property);
+            }
+
+
+            List<string> imageUrl = new List<string>();
+
+            if (property.Photo != null)
+            {
+                foreach (var photo in property.Photo)
+                {
+                    if (property.Photo != null)
+                    {
+                        using var httpClient = new HttpClient();
+                        using var content = new MultipartFormDataContent();
+                        content.Add(new StringContent("1ccfac3ffddc022d212e2a5617ba363f"), "key");
+
+                        using var imageStream = photo.OpenReadStream();
+                        content.Add(new StreamContent(imageStream), "image", photo.FileName);
+
+                        var response = await httpClient.PostAsync("https://api.imgbb.com/1/upload", content);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string responseContent = await response.Content.ReadAsStringAsync();
+                            dynamic jsonResponse = JsonConvert.DeserializeObject<dynamic>(responseContent);
+
+                            imageUrl.Add($"{jsonResponse.data.url}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"API request failed with status code {response.StatusCode}");
+                        }
+                    }
+                }
+            }
+
+            var commandText = "CALL sp_update_property(@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12)";
+
+            if (AppSettings.AppSettings.ownerContext != null)
+            {
+                AppSettings.AppSettings.ownerContext.Database.ExecuteSqlRaw(commandText,
+                    new object[] {
+                    property.Id, property.Title, property.Description, property.RoomNumber,
+                    property.SleepingPlaceNumber, property.Price, property.Country, property.City,
+                    property.Street, property.House, property.Type, property.MinRentalDays, imageUrl.Count() > 0 ? imageUrl : null
+                    });
+            }
+
+            TempData["Edited"] = true;
+
+            return RedirectToAction("ListProperties");
+        }
+
+        [HttpGet]
         public async Task<IActionResult> ListProperties()
         {
             var model = AppSettings.AppSettings.ownerContext.PropertyListOwners.ToList();

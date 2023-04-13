@@ -31,6 +31,21 @@
     </div>
 }
 
+@if (TempData.ContainsKey("Edited") && TempData["Edited"] is bool edited)
+{
+    <div id="toast-container" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-delay="0" data-autohide="false">
+        <div class="toast-header bg-info" )">
+            <strong class="me-auto" style="color: #FFF;">Ви редактували оголошення!</strong>
+            <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="toast-body bg-light">
+            Зміни вступлять в силу найближчим часом.
+        </div>
+    </div>
+}
+
 <script>
     $(function () {
         $('.toast').toast('show');
@@ -64,7 +79,10 @@
                         <div class="row">
 
                             <div class="col-3 px-4 py-3 d-flex align-items-center">
-                                <img class="img-thumbnail width="50" src="@p.PhotoLinks[0]" />
+                                @if (p.PhotoLinks.Count() > 0)
+                                {
+                                    <img class="img-thumbnail width="50" src="@p.PhotoLinks[0]" />
+                                }
                             </div>
 
                             <div class="col-6 py-3 px-3 ">
@@ -87,9 +105,9 @@
 
                             <div class="col-3 px-5 py-3 d-flex flex-column justify-content-center">
                                 <div>
-                                    <a class="btn py-1 btn-primary w-100" data-bs-toggle="modal" data-bs-target="#details">Деталі</a>
+                                    <a class="btn py-1 btn-primary w-100" data-bs-toggle="modal" data-bs-target="@($"#details_{p.Id}")">Деталі</a>
 
-                                    <div class="modal fade" id="details" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="@($"details_{p.Id}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
 
@@ -160,7 +178,7 @@
 
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
-                                                        <button type="submit" class="btn btn-info">Редагувати</button>
+                                                        <a class="btn btn-info" asp-action="EditProperty" asp-route-id="@p.Id">Редагувати</a>
                                                     </div>
                                                 </div>
 
@@ -232,15 +250,27 @@
 
                             <div class="col-6 py-3 px-3 ">
 
+
                                 <div style="display: flex; flex-direction: column; justify-content: space-between; min-height: 100%;">
-                                    <div></div>
+                                    <div>
+                                        @if (p.Verified == null)
+                                        {
+                                            <a class="text-danger text-sm-start" data-toggle="tooltip" title="Модератор верифіковує ваше оголошення">Оголошення розглядається</a>
+
+                                            <script>
+                                                $(document).ready(function () {
+                                                    $('[data-toggle="tooltip"]').tooltip();
+                                                });
+                                            </script>
+                                        }
+                                    </div>
                                     <div class="h-50">
                                         <h4>@p.Title</h4>
                                         <p class="mt-3" style="margin-bottom: 0;">@p.Description</p>
                                     </div>
                                     <div>
-                                        <p class="@(p.BookingsCount == 0 ? "text-primary" : "text-success")">Заявок на бронювання: @p.BookingsCount</p>
-                                        <p class="text-muted" style="margin-bottom: 0;">
+
+                                        <p class="text-muted mt-3" style="margin-bottom: 0;">
                                             @p.PublicationDate?.ToString("D") - @p.Country, @p.City
                                         </p>
                                     </div>
@@ -250,9 +280,9 @@
 
                             <div class="col-3 px-5 py-3 d-flex flex-column justify-content-center">
                                 <div>
-                                    <a class="btn py-1 btn-primary w-100" data-bs-toggle="modal" data-bs-target="#details">Деталі</a>
+                                    <a class="btn py-1 btn-primary w-100" data-bs-toggle="modal" data-bs-target="@($"#details_{p.Id}")">Деталі</a>
 
-                                    <div class="modal fade" id="details" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="@($"details_{p.Id}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
 
@@ -323,7 +353,7 @@
 
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
-                                                        <button type="submit" class="btn btn-info">Редагувати</button>
+                                                        <a class="btn btn-info" asp-action="EditProperty" asp-route-id="@p.Id">Редагувати</a>
                                                     </div>
                                                 </div>
 
@@ -334,7 +364,10 @@
                                 </div>
 
                                 <div>
-                                    <a class="btn py-1 btn-success w-100 mt-3" data-bs-toggle="modal" data-bs-target="@($"#activate{p.Id}")">Активувати</a>
+                                    @if (p.Verified == true)
+                                    {
+                                        <a class="btn py-1 btn-success w-100 mt-3" data-bs-toggle="modal" data-bs-target="@($"#activate{p.Id}")">Активувати</a>
+                                    }
 
                                     <div class="modal fade" id="@($"activate{p.Id}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -380,5 +413,6 @@ else
     <h3 class="mt-5 text-center">У вас поки що немає жодного оголошення</h3>
     <a asp-action="AddProperty" class="link-primary ">
         <h5>Створити</h5>
-    </a> 
+    </a>
 }
+
