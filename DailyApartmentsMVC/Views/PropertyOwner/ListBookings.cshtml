@@ -1,0 +1,123 @@
+﻿@model List<DailyApartmentsMVC.Models.OwnerModel.BookingsForOwner>
+@{
+    ViewData["Title"] = "Bookings";
+    int currId = (int)ViewBag.PropertyId;
+
+    var bookings = Model.ToList();
+    if (currId != -1)
+        bookings = bookings.Where(b => b.PropertyId == currId).ToList();
+}
+
+<div class="container mt-4">
+    <!-- SELECT PROPERTY -->
+    <form class="mb-4">
+        <div class="form-group d-flex">
+            <div style="width: 400px;">
+                <label for="exampleSelect">Оберіть оголошення</label>
+                <select name="id" class="form-control" id="exampleSelect">
+                    @if (currId == -1)
+                    {
+                        <option value="-1" selected>Усі</option>
+                    }
+                    else
+                    {
+                        <option value="-1">Усі</option>
+                    }
+
+                    @for (int i = 0; i < Model.Count(); i++)
+                    {
+                        if (Model[i].PropertyId == currId)
+                        {
+                            <option value="@Model[i].PropertyId" selected>@Model[i].Title</option>
+                        }
+                        else
+                        {
+                            <option value="@Model[i].PropertyId">@Model[i].Title</option>
+                        }
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mx-5 py-1">Застосувати</button>
+
+        </div>
+
+    </form>
+
+    <!-- BOOKING TABLE -->
+    @if (bookings.All(b => b.Bookingids == null))
+    {
+        <h3>У вас немає жодного бронювання @(currId == -1 ? "" : "по цьому оголошенню")</h3>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Назва</th>
+                    <th scope="col">Ім'я арендатора</th>
+                    <th scope="col">Дата заїзду</th>
+                    <th scope="col">Дата виїзду</th>
+                    <th scope="col">Ціна</th>
+                    <th scope="col">Усього</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in bookings)
+                {
+                    for (int i = 0; i < b.Bookingids?.Length; i++)
+                    {
+                        bool? status = b.Statuses?[i];
+                        string tty = string.Empty;
+                        if (status == null)
+                        {
+                            tty = "table-primary";
+                        }
+                        else if (status == false)
+                        {
+                            tty = "table-danger";
+                        }
+                        else
+                        {
+                            tty = "table-success";
+                        }
+
+                        DateTime arrivalDate = b.Dates?[i]?.ToDateTime(new TimeOnly(14, 0)) ?? DateTime.MinValue;
+                        DateTime departureDate = arrivalDate.AddDays(b.Durations?[i] ?? 0);
+                        <tr class="@tty">
+                            <td>@b.Title</td>
+                            <td>@b.Guestnames?[i]</td>
+                            <td>@arrivalDate.ToString("D")</td>
+                            <td>@departureDate.ToString("D")</td>
+                            <td>$ @b.Price</td>
+                            <td class="fw-semibold">$ @(b.Price * b.Durations?[i])</td>
+                            <td class="text-end">
+                                
+                                @if (status == null)
+                                {
+                                    <a class="btn btn-success btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                                        </svg>
+                                    </a>
+                                    <a class="btn btn-danger btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                                        </svg>
+                                    </a>
+                                }
+                                <a class="btn btn-info btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
+                                        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z" />
+                                        <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
+                                    </svg>
+                                </a>
+                                
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    }
+</div>

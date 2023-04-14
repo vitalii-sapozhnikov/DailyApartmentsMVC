@@ -192,5 +192,39 @@ namespace DailyApartmentsMVC.Controllers
             return RedirectToAction("ListProperties");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SendReview(int id, int rating, string comment)
+        {
+            if (!string.IsNullOrEmpty(comment))
+            {
+                var query = FormattableStringFactory.Create($@"INSERT INTO client_comment (booking_id, comment) " +
+                    $"VALUES ({id}, '{comment}');");
+
+                await AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolatedAsync(query);
+            }
+
+            if (!string.IsNullOrEmpty(comment))
+            {
+                var query = FormattableStringFactory.Create($@"INSERT INTO client_review (booking_id, rate) " +
+                    $"VALUES ({id}, '{rating}');");
+
+                await AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolatedAsync(query);
+            }
+
+            return RedirectToAction();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ListBookings(int id)
+        {
+            var bookings = AppSettings.AppSettings.ownerContext.BookingsForOwners.ToList();
+
+            ViewBag.PropertyId = id;
+
+
+            return View(bookings);
+        }
+
     }
 }

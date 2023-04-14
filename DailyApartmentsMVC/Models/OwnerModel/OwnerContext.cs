@@ -16,6 +16,8 @@ public partial class OwnerContext : DbContext
     }
 
     public virtual DbSet<PropertyListOwner> PropertyListOwners { get; set; }
+    public virtual DbSet<BookingsForOwner> BookingsForOwners { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<PropertyListOwner>(entity =>
@@ -55,6 +57,39 @@ public partial class OwnerContext : DbContext
                 .HasColumnName("type");
             entity.Property(e => e.Verified).HasColumnName("verified");
         });
+
+        modelBuilder.Entity<BookingsForOwner>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("bookings_for_owner");
+
+            entity.Property(e => e.Bookingids).HasColumnName("bookingids");
+            entity.Property(e => e.City)
+                .HasColumnType("character varying")
+                .HasColumnName("city");
+            entity.Property(e => e.Country)
+                .HasColumnType("character varying")
+                .HasColumnName("country");
+            entity.Property(e => e.Dates).HasColumnName("dates");
+            entity.Property(e => e.Durations).HasColumnName("durations");
+            entity.Property(e => e.Flat).HasColumnName("flat");
+            entity.Property(e => e.Guestemails)
+                .HasColumnType("character varying[]")
+                .HasColumnName("guestemails");
+            entity.Property(e => e.Guestnames).HasColumnName("guestnames");
+            entity.Property(e => e.House).HasColumnName("house");
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.PropertyId).HasColumnName("property_id");
+            entity.Property(e => e.Statuses).HasColumnName("statuses");
+            entity.Property(e => e.Street)
+                .HasColumnType("character varying")
+                .HasColumnName("street");
+            entity.Property(e => e.Title)
+                .HasColumnType("character varying")
+                .HasColumnName("title");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
 
