@@ -32,12 +32,12 @@ namespace DailyApartmentsMVC.Controllers
             var properties = AppSettings.AppSettings.guestContext.PropertyLists;
 
             // daterange will contain the selected date range in the format "DD/MM/YYYY - DD/MM/YYYY"
-            DateTime? startDate, endDate;
+            DateOnly startDate = DateOnly.MinValue, endDate = DateOnly.MaxValue;
             if (!string.IsNullOrEmpty(daterange))
             {
                 string[] dateRangeParts = daterange.Split(" - ");
-                startDate = DateTime.Parse(dateRangeParts[0]);
-                endDate = DateTime.Parse(dateRangeParts[1]);
+                startDate = DateOnly.Parse(dateRangeParts[0]);
+                endDate = DateOnly.Parse(dateRangeParts[1]);
             }
 
             // Build the LINQ query to filter the properties.
@@ -47,9 +47,21 @@ namespace DailyApartmentsMVC.Controllers
                 (!minPrice.HasValue || p.Price >= minPrice) &&
                 (!maxPrice.HasValue || p.Price <= maxPrice) &&
                 (!roomNumber.HasValue || p.RoomNumber >= roomNumber) &&
-                (!sleepingPlacesNumber.HasValue || p.SleepingPlaceNumber >= sleepingPlacesNumber));
-            //(!startDate.HasValue || p. >= startDate) &&
-            //(!endDate.HasValue || p.EndDate <= endDate));
+                (!sleepingPlacesNumber.HasValue || p.SleepingPlaceNumber >= sleepingPlacesNumber)).ToList();
+
+            var notOverlappingProperties = filteredProperties.ToList();
+
+            if (startDate != DateOnly.MinValue && endDate != DateOnly.MaxValue)
+            {
+                notOverlappingProperties = filteredProperties.Where(p =>
+                (p.Dates?.Length ?? 0) == (p.Durations?.Length ?? 0) &&
+
+                (!p.Dates?.Where((d, i) => (startDate < d.AddDays(p.Durations[i]) && endDate > d)
+                || (startDate >= d && startDate < d.AddDays(p.Durations[i]))).Any() ?? true)
+                ).ToList();
+
+                filteredProperties = notOverlappingProperties.ToList();
+            }
 
 
             // Implement pagination

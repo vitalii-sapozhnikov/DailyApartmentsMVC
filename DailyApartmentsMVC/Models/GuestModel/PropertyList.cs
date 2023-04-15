@@ -38,4 +38,8 @@ public partial class PropertyList
     public short? Flat { get; set; }
 
     public decimal? Rating { get; set; }
+
+    public DateOnly[]? Dates { get; set; }
+
+    public int[]? Durations { get; set; }
 }

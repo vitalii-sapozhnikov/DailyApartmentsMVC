@@ -42,7 +42,9 @@ public partial class GuestContext : DbContext
             entity.Property(e => e.Country)
                 .HasColumnType("character varying")
                 .HasColumnName("country");
+            entity.Property(e => e.Dates).HasColumnName("dates");
             entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Durations).HasColumnName("durations");
             entity.Property(e => e.Flat).HasColumnName("flat");
             entity.Property(e => e.House).HasColumnName("house");
             entity.Property(e => e.Id).HasColumnName("id");
@@ -65,7 +67,6 @@ public partial class GuestContext : DbContext
             entity.Property(e => e.Type)
                 .HasColumnType("character varying")
                 .HasColumnName("type");
-
         });
 
 
