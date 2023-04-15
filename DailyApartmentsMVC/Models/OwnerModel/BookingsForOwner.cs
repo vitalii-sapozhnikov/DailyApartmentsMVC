@@ -32,4 +32,6 @@ public partial class BookingsForOwner
     public string?[]? Guestnames { get; set; }
 
     public string?[]? Guestemails { get; set; }
+    public decimal?[]? GuestReviews { get; set; }
+    public string?[]? GuestComments { get; set; }
 }

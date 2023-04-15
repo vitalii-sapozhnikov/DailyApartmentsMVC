@@ -193,38 +193,57 @@ namespace DailyApartmentsMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendReview(int id, int rating, string comment)
+        public async Task<IActionResult> SendReview(int id, Dictionary<int, int> rates, string comment)
         {
             if (!string.IsNullOrEmpty(comment))
             {
                 var query = FormattableStringFactory.Create($@"INSERT INTO client_comment (booking_id, comment) " +
                     $"VALUES ({id}, '{comment}');");
 
-                await AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolatedAsync(query);
+                await AppSettings.AppSettings.ownerContext.Database.ExecuteSqlInterpolatedAsync(query);
             }
 
-            if (!string.IsNullOrEmpty(comment))
+            if (rates.Count() > 0)
             {
                 var query = FormattableStringFactory.Create($@"INSERT INTO client_review (booking_id, rate) " +
-                    $"VALUES ({id}, '{rating}');");
+                    $"VALUES ({id}, '{rates[id]}');");
 
-                await AppSettings.AppSettings.guestContext.Database.ExecuteSqlInterpolatedAsync(query);
+                await AppSettings.AppSettings.ownerContext.Database.ExecuteSqlInterpolatedAsync(query);
             }
 
-            return RedirectToAction();
+            return RedirectToAction("ListBookings");
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> ListBookings(int id)
+        public async Task<IActionResult> ListBookings(int id = -1)
         {
             var bookings = AppSettings.AppSettings.ownerContext.BookingsForOwners.ToList();
+            var myRates = AppSettings.AppSettings.ownerContext.MyRatesAndCommentsForOwners.ToList();
 
             ViewBag.PropertyId = id;
-
+            ViewBag.MyRates = myRates;
 
             return View(bookings);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            var query = FormattableStringFactory.Create($"SELECT cancel_booking({id});");
+            await AppSettings.AppSettings.ownerContext.Database.ExecuteSqlInterpolatedAsync(query);
+            TempData["BookingCanceled"] = true;
+            return RedirectToAction("ListBookings");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ApproveBooking(int id)
+        {
+            var query = FormattableStringFactory.Create($"SELECT approve_booking({id});");
+            await AppSettings.AppSettings.ownerContext.Database.ExecuteSqlInterpolatedAsync(query);
+            TempData["BookingApproved"] = true;
+            return RedirectToAction("ListBookings");
+        }
     }
 }

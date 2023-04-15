@@ -166,8 +166,8 @@
                                                     @if (ViewBag.ReviewAttributes is List<string> lst)
                                                     {
 
-                                                        List<ShowGuestReview> reviewLst = ViewBag.Reviews as List<ShowGuestReview>;
-                                                        List<ShowGuestComment> comments = ViewBag.Comments as List<ShowGuestComment>;
+                                                        List<PropertyReview> reviewLst = ViewBag.Reviews as List<PropertyReview>;
+                                                        List<PropertyComment> comments = ViewBag.Comments as List<PropertyComment>;
                                                         reviewLst = reviewLst?.Where(r => r.BookingId == b.Id).ToList();
                                                         string com = comments?.FirstOrDefault(c => c.BookingId == b.Id)?.Comment;
                                                         bool disabled = reviewLst.Count() == 0 ? false : true;

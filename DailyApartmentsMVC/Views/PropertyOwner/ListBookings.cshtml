@@ -1,4 +1,5 @@
-﻿@model List<DailyApartmentsMVC.Models.OwnerModel.BookingsForOwner>
+﻿@using DailyApartmentsMVC.Models.OwnerModel;
+@model List<DailyApartmentsMVC.Models.OwnerModel.BookingsForOwner>
 @{
     ViewData["Title"] = "Bookings";
     int currId = (int)ViewBag.PropertyId;
@@ -7,6 +8,32 @@
     if (currId != -1)
         bookings = bookings.Where(b => b.PropertyId == currId).ToList();
 }
+
+<!-- TOASTER -->
+@if (TempData.ContainsKey("BookingCanceled") && TempData["BookingCanceled"] is bool canceled)
+{
+    <div id="toast-container" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-delay="0" data-autohide="false">
+        <div class="toast-header bg-info" )">
+            <strong class="me-auto" style="color: #FFF;">Ви відмінили бронювання!</strong>
+            <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="toast-body bg-light">
+            Зміни вступлять в силу найближчим часом.
+        </div>
+    </div>
+}
+
+<script>
+    $(function () {
+        $('.toast').toast('show');
+    });
+</script>
+
+
+
+
 
 <div class="container mt-4">
     <!-- SELECT PROPERTY -->
@@ -85,33 +112,317 @@
                         DateTime departureDate = arrivalDate.AddDays(b.Durations?[i] ?? 0);
                         <tr class="@tty">
                             <td>@b.Title</td>
-                            <td>@b.Guestnames?[i]</td>
+                            <td>
+
+                                <a class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="@($"#guestDetails_{b.Bookingids[i]}")">@b.Guestnames?[i]</a>
+
+                                <div class="modal fade text-start" id="@($"guestDetails_{b.Bookingids[i]}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Деталі орендатора</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+
+                                                <div class="form-group mb-3">
+                                                    <label>ПІБ</label>
+                                                    <input type="text" class="form-control" readonly value="@b.Guestnames?[i]" />
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label>Контактна інформація</label>
+                                                    <input type="text" class="form-control" readonly value="@b.Guestemails?[i]" />
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label>Рейтинг</label>
+                                                    <input type="text" class="form-control" readonly value="@string.Format("{0:0.00} 🟊", b.GuestReviews?[i])" />
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <p>Коментарі</p>
+                                                    <div class="border border-2 border-solid rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                                        @{
+                                                            string[] comments = b.GuestComments[i].Split("~?~&~/~");
+                                                            bool first = true;
+                                                            foreach (var com in comments)
+                                                            {
+                                                                if (!first)
+                                                                {
+                                                                    <hr />
+                                                                }
+                                                                <p class="">@com</p>
+                                                                first = false;
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
                             <td>@arrivalDate.ToString("D")</td>
                             <td>@departureDate.ToString("D")</td>
                             <td>$ @b.Price</td>
                             <td class="fw-semibold">$ @(b.Price * b.Durations?[i])</td>
                             <td class="text-end">
-                                
+
                                 @if (status == null)
                                 {
-                                    <a class="btn btn-success btn-sm">
+                                    <!-- ========= APPROVE BUTTON ========== -->
+                                    <a class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="@($"#approveBooking_{b.Bookingids[i]}")">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
                                             <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
                                         </svg>
                                     </a>
-                                    <a class="btn btn-danger btn-sm">
+
+                                    <div class="modal fade text-start" id="@($"approveBooking_{b.Bookingids[i]}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Підтвердити бронювання</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+
+                                                    <p>Ви дійсно бажаєте підтвердити бронювання на "@b.Title" з @arrivalDate.ToString("D") по @departureDate.ToString("D")?</p>
+
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <form method="post" asp-action="ApproveBooking" asp-route-id="@b.Bookingids[i]">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                                        <button type="submit" id="create-booking-btn" class="btn btn-success">Підтвердити</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- ========= CANCEL BUTTON ========== -->
+                                    <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="@($"#cancelBooking_{b.Bookingids[i]}")">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                                             <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
                                         </svg>
                                     </a>
+
+                                    <div class="modal fade text-start" id="@($"cancelBooking_{b.Bookingids[i]}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Відмінити бронювання</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+
+                                                    <p>Ви дійсно бажаєте відмінити бронювання на "@b.Title" з @arrivalDate.ToString("D") по @departureDate.ToString("D")?</p>
+
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <form method="post" asp-action="CancelBooking" asp-route-id="@b.Bookingids[i]">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                                        <button type="submit" id="create-booking-btn" class="btn btn-danger">Підтвердити</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
-                                <a class="btn btn-info btn-sm">
+                                else if (status == true && departureDate < DateTime.Now)
+                                {
+                                    <!-- ========= REVIEW BUTTON ========== -->
+                                    <a class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="@($"#sendReview_{b.Bookingids[i]}")">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-half" viewBox="0 0 16 16">
+                                            <path d="M5.354 5.119 7.538.792A.516.516 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.537.537 0 0 1 16 6.32a.548.548 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.52.52 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.58.58 0 0 1 .085-.302.513.513 0 0 1 .37-.245l4.898-.696zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.565.565 0 0 1 .162-.505l2.907-2.77-4.052-.576a.525.525 0 0 1-.393-.288L8.001 2.223 8 2.226v9.8z" />
+                                        </svg>
+                                    </a>
+
+                                    <div class="modal fade text-start" id="@($"sendReview_{b.Bookingids[i]}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Залиште відгук</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+
+                                                    <form method="post" asp-action="SendReview" asp-route-id="@b.Bookingids[i]">
+
+                                                        @{
+                                                            List<MyRatesAndCommentsForOwner> rates = ViewBag.MyRates as List<MyRatesAndCommentsForOwner>;
+                                                            int rate = rates?.FirstOrDefault(r => r.BookingId == b.Bookingids[i])?.Rate ?? -1;
+                                                            string comment = rates?.FirstOrDefault(r => r.BookingId == b.Bookingids[i])?.Comment ?? string.Empty;
+                                                            bool disabled = (rate > 0 || !string.IsNullOrEmpty(comment));
+                                                        }
+
+                                                        <div>
+                                                            
+
+                                                            <h5>Рейтинг</h5>
+
+                                                            <table>
+                                                            <tr>
+                                                            <td>
+                                                                        <div class="rate">
+                                                                            <input type="radio"
+                                                                   id="star5_@b.Bookingids[i]"
+                                                                   name="rates[@(b.Bookingids[i])]"
+                                                                   value="5" 
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(rate == 5 ? "checked" : "")/>
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star5_@b.Bookingids[i]" title="text">5 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star4_@b.Bookingids[i]"
+                                                                   name="rates[@(b.Bookingids[i])]"
+                                                                   value="4" 
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(rate == 4 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star4_@b.Bookingids[i]" title="text">4 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star3_@b.Bookingids[i]"
+                                                                   name="rates[@(b.Bookingids[i])]"
+                                                                   value="3" 
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(rate == 3 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star3_@b.Bookingids[i]" title="text">3 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star2_@b.Bookingids[i]"
+                                                                   name="rates[@(b.Bookingids[i])]"
+                                                                   value="2" 
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(rate == 2 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star2_@b.Bookingids[i]" title="text">2 stars</label>
+
+                                                                            <input type="radio"
+                                                                   id="star1_@b.Bookingids[i]"
+                                                                   name="rates[@(b.Bookingids[i])]"
+                                                                   value="1" 
+                                                                   @(disabled ? "disabled" : "")
+                                                                   @(rate == 1 ? "checked" : "") />
+                                                                            <label class="@(disabled ? "disabled" : "")" for="star1_@b.Bookingids[i]" title="text">1 stars</label>
+
+                                                                        </div>
+                                                            </td>
+                                                            </tr>
+                                                            
+                                                            </table>
+
+
+                                                        </div>
+
+
+
+                                                        <div class="mt-3">
+                                                            <h5>Коментар</h5>
+                                                            <textarea @(disabled ? "disabled" : "") name="comment" class="form-control w-100 mb-4 text-black" rows="3" style="border: 1px solid #ccc;">@comment</textarea>
+                                                        </div>
+
+
+                                                        @*<hr>
+                                        <h5 class="mt-3 mb-2">Коментар</h5>
+                                        <textarea name="comment"
+                                        class="form-control w-100 mb-4"
+                                        rows="3"
+                                        style="border: 1px solid #ccc;"
+                                        @(disabled ? "readonly" : "")>@(string.IsNullOrEmpty(com) ? "" : com)</textarea>*@
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                                            @if(!disabled)
+                                                            {
+                                                                <button type="submit" id="send-review-btn" class="btn btn-success">Надіслати</button>                                                                
+                                                            }
+                                                        </div>
+
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- ========= DETAILS BUTTON ========== -->
+                                <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="@($"#details_{b.Bookingids[i]}")">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-text" viewBox="0 0 16 16">
                                         <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z" />
                                         <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
                                     </svg>
                                 </a>
-                                
+
+                                <div class="modal fade text-start" id="@($"details_{b.Bookingids[i]}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Деталі бронювання</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+
+                                                <div class="form-group mb-3">
+                                                    <label>Назва</label>
+                                                    <input type="text" class="form-control fw-semibold text-black" readonly value="@b.Title" />
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label>Місцезнаходження</label>
+                                                    <input type="text" class="form-control" readonly value="@b.Country, @b.City, @b.Street @b.House" />
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label>Дата</label>
+                                                    <input type="text" class="form-control" readonly value="@arrivalDate.ToString("D") - @departureDate.ToString("D")" />
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label>Ім'я орендатора</label>
+                                                    <input type="text" class="form-control" readonly value="@b.Guestnames?[i]" />
+                                                </div>
+
+                                                <div class="form-group mb-3">
+                                                    <label>Контактна інформація орендатора</label>
+                                                    <input type="text" class="form-control" readonly value="@b.Guestemails?[i]" />
+                                                </div>
+
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="form-group mb-3">
+                                                        <label>Ціна</label>
+                                                        <input type="text" class="form-control" readonly value="$ @b.Price" />
+                                                    </div>
+                                                    <div class="form-group mb-3 fw-semibold text-black">
+                                                        <label>Усього</label>
+                                                        <input type="text" class="form-control fw-semibold text-black" readonly value="$ @(b.Price * b.Durations?[i])" />
+                                                    </div>
+                                                </div>
+                                                
+
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </td>
                         </tr>
                     }

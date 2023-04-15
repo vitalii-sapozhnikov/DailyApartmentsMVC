@@ -20,8 +20,8 @@ public partial class GuestContext : DbContext
     public DbSet<PropertyDetails> PropertyDetails { get; set; }
     public virtual DbSet<BookingsArchive> BookingsArchives { get; set; }
     public virtual DbSet<ReviewAttribute> ReviewAttributes { get; set; }
-    public virtual DbSet<ShowGuestComment> ShowGuestComments { get; set; }
-    public virtual DbSet<ShowGuestReview> ShowGuestReviews { get; set; }
+    public virtual DbSet<PropertyComment> PropertyComments { get; set; }
+    public virtual DbSet<PropertyReview> PropertyReviews { get; set; }
 
 
 
@@ -143,11 +143,11 @@ public partial class GuestContext : DbContext
                 .HasColumnName("name");
         });
 
-        modelBuilder.Entity<ShowGuestComment>(entity =>
+        modelBuilder.Entity<PropertyComment>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToView("show_guest_comments");
+                .ToView("property_comments");
 
             entity.Property(e => e.BookingId).HasColumnName("booking_id");
             entity.Property(e => e.Comment)
@@ -155,11 +155,11 @@ public partial class GuestContext : DbContext
                 .HasColumnName("comment");
         });
 
-        modelBuilder.Entity<ShowGuestReview>(entity =>
+        modelBuilder.Entity<PropertyReview>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToView("show_guest_reviews");
+                .ToView("property_reviews");
 
             entity.Property(e => e.BookingId).HasColumnName("booking_id");
             entity.Property(e => e.ReviewAttributeId).HasColumnName("review_attribute_id");

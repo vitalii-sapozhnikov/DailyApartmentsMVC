@@ -92,8 +92,8 @@ namespace DailyApartmentsMVC.Controllers
             ViewBag.ReviewAttributes = review_attribute_names;
 
 
-            List<ShowGuestComment> comments = AppSettings.AppSettings.guestContext.ShowGuestComments.ToList() ?? new List<ShowGuestComment>();
-            List<ShowGuestReview> reviews = AppSettings.AppSettings.guestContext.ShowGuestReviews.ToList() ?? new List<ShowGuestReview>();
+            List<PropertyComment> comments = AppSettings.AppSettings.guestContext.PropertyComments.ToList() ?? new List<PropertyComment>();
+            List<PropertyReview> reviews = AppSettings.AppSettings.guestContext.PropertyReviews.ToList() ?? new List<PropertyReview>();
 
 
             ViewBag.Comments = comments;

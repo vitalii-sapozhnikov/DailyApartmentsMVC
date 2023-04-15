@@ -17,6 +17,8 @@ public partial class OwnerContext : DbContext
 
     public virtual DbSet<PropertyListOwner> PropertyListOwners { get; set; }
     public virtual DbSet<BookingsForOwner> BookingsForOwners { get; set; }
+    public virtual DbSet<MyRatesAndCommentsForOwner> MyRatesAndCommentsForOwners { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -78,6 +80,8 @@ public partial class OwnerContext : DbContext
                 .HasColumnType("character varying[]")
                 .HasColumnName("guestemails");
             entity.Property(e => e.Guestnames).HasColumnName("guestnames");
+            entity.Property(e => e.GuestReviews).HasColumnName("guest_rates");
+            entity.Property(e => e.GuestComments).HasColumnName("guest_comments");
             entity.Property(e => e.House).HasColumnName("house");
             entity.Property(e => e.Price).HasColumnName("price");
             entity.Property(e => e.PropertyId).HasColumnName("property_id");
@@ -90,6 +94,18 @@ public partial class OwnerContext : DbContext
                 .HasColumnName("title");
         });
 
+        modelBuilder.Entity<MyRatesAndCommentsForOwner>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("my_rates_and_comments_for_owner");
+
+            entity.Property(e => e.BookingId).HasColumnName("booking_id");
+            entity.Property(e => e.Comment)
+                .HasColumnType("character varying")
+                .HasColumnName("comment");
+            entity.Property(e => e.Rate).HasColumnName("rate");
+        });
 
         OnModelCreatingPartial(modelBuilder);
 
