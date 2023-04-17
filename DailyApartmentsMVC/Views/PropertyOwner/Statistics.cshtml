@@ -1,0 +1,177 @@
+﻿@{
+    ViewData["Title"] = "Statistics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center mt-4">Статистика</h1>
+<div class="container mt-3">
+    <h3 class="text-center my-3">Прибуток</h3>
+    <div class="row">
+        <div class="col">
+            <canvas id="totalIncome"></canvas>
+        </div>
+        <div class="col">
+            <canvas id="ratioIncome"></canvas>
+        </div>
+        
+    </div>
+
+    <div class="row mt-5">
+        <h3 class="text-center my-3">Кількість бронювань</h3>
+
+        <div class="col">
+            <canvas id="bookingsCount"></canvas>
+        </div>
+        <div class="col">
+            <canvas id="ratioBookings"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script>
+        var totalIncome = @Html.Raw(Json.Serialize(ViewBag.MonthlyIncome));
+
+        var labels = [];
+        var data = [];
+
+        // extract the month and value data from the chartData array
+        for (var i = 0; i < totalIncome.length; i++) {
+            labels.push(totalIncome[i].month);
+            data.push(totalIncome[i].value);
+        }
+
+        var ctx = document.getElementById('totalIncome').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Прибуток, $ США',
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var bookingsCount = @Html.Raw(Json.Serialize(ViewBag.MonthlyBookings));
+
+        var labels = [];
+        var data = [];
+
+        // extract the month and value data from the chartData array
+        for (var i = 0; i < bookingsCount.length; i++) {
+            labels.push(bookingsCount[i].month);
+            data.push(bookingsCount[i].value);
+        }
+
+        var ctx = document.getElementById('bookingsCount').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Кількість бронювань, од.',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var ratioIncome = @Html.Raw(Json.Serialize(ViewBag.RatioIncome));
+
+        var labels = [];
+        var data = [];
+
+        // extract the month and value data from the chartData array
+        for (var i = 0; i < ratioIncome.length; i++) {
+            labels.push(ratioIncome[i].title);
+            data.push(ratioIncome[i].value);
+        }
+
+        var ctx = document.getElementById('ratioIncome').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Кількість бронювань, од.',
+                    data: data,
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
+                }]
+            }
+        });
+    </script>
+
+    <script>
+        var ratioBookings = @Html.Raw(Json.Serialize(ViewBag.RatioBookings));
+
+        var labels = [];
+        var data = [];
+
+        // extract the month and value data from the chartData array
+        for (var i = 0; i < ratioBookings.length; i++) {
+            labels.push(ratioBookings[i].title);
+            data.push(ratioBookings[i].value);
+        }
+
+        var ctx = document.getElementById('ratioBookings').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Кількість бронювань, од.',
+                    data: data,
+                    backgroundColor: [
+                        'rgb(178, 164, 255)',
+                        'rgb(255, 180, 180)',
+                        'rgb(255, 222, 180)',
+                        'rgb(253, 247, 195)',
+                        'rgb(153, 102, 255)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 0, 0)',
+                        'rgb(0, 255, 0)',
+                        'rgb(0, 0, 255)',
+                        'rgb(128, 128, 128)'
+                    ],
+
+                    hoverOffset: 4
+                }]
+            }
+        });
+    </script>
+
+</div>
+

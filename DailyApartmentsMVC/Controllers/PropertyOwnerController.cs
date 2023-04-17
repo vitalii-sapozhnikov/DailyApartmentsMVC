@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -244,6 +245,62 @@ namespace DailyApartmentsMVC.Controllers
             await AppSettings.AppSettings.ownerContext.Database.ExecuteSqlInterpolatedAsync(query);
             TempData["BookingApproved"] = true;
             return RedirectToAction("ListBookings");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Statistics(int id = -1)
+        {
+            var propertyList = AppSettings.AppSettings.ownerContext.OwnerBookingsStatistics.Select(b => new
+            {
+                Title = b.Title ?? "",
+                Id = b.PropertyId ?? -1
+            }).Distinct().ToList();
+
+
+            var monthlyIncome = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
+                id == -1 ? "SELECT * FROM owner_monthly_income()" : "SELECT * FROM owner_monthly_income({0})", id)
+                .Select(i => new
+                {
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(int.Parse( i.MonthIndex )),
+                    Value = i.Value
+                })
+                .ToList();
+
+            var monthlyBookings = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
+                id == -1 ? "SELECT * FROM owner_monthly_bookings()" : "SELECT * FROM owner_monthly_bookings({0})", id)
+                .Select(i => new
+                {
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(int.Parse(i.MonthIndex)),
+                    Value = i.Value
+                })
+                .ToList();
+
+            ViewBag.MonthlyIncome = monthlyIncome;
+            ViewBag.MonthlyBookings = monthlyBookings;
+
+
+            // PROPERTY INCOME RATIO
+            var ratioIncome = propertyList.Select(p => new
+            {
+                Title = p.Title,
+                Id = p.Id,
+                Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw("SELECT * FROM owner_monthly_income({0})", p.Id).Sum(x => x.Value)
+            }).ToList();
+
+            ViewBag.RatioIncome = ratioIncome;
+
+
+            // PROPERTY BOOKINGS RATIO
+            var ratioBookings = propertyList.Select(p => new
+            {
+                Title = p.Title,
+                Id = p.Id,
+                Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw("SELECT * FROM owner_monthly_bookings({0})", p.Id).Sum(x => x.Value)
+            }).ToList();
+
+            ViewBag.RatioBookings = ratioBookings;
+
+            return View();
         }
     }
 }

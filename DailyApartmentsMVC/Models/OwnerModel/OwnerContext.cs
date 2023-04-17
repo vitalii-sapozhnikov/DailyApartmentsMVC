@@ -18,6 +18,10 @@ public partial class OwnerContext : DbContext
     public virtual DbSet<PropertyListOwner> PropertyListOwners { get; set; }
     public virtual DbSet<BookingsForOwner> BookingsForOwners { get; set; }
     public virtual DbSet<MyRatesAndCommentsForOwner> MyRatesAndCommentsForOwners { get; set; }
+    public virtual DbSet<OwnerBookingsStatistic> OwnerBookingsStatistics { get; set; }
+    public DbSet<MonthlyIncome> MonthlyIncomes { get; set; }
+    public DbSet<MonthlyBooking> MonthlyBookings { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -105,6 +109,40 @@ public partial class OwnerContext : DbContext
                 .HasColumnType("character varying")
                 .HasColumnName("comment");
             entity.Property(e => e.Rate).HasColumnName("rate");
+        });
+
+        modelBuilder.Entity<OwnerBookingsStatistic>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("owner_bookings_statistics");
+
+            entity.Property(e => e.BookingId).HasColumnName("booking_id");
+            entity.Property(e => e.CurrentPrice).HasColumnName("current_price");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Duration).HasColumnName("duration");
+            entity.Property(e => e.GuestId).HasColumnName("guest_id");
+            entity.Property(e => e.PropertyId).HasColumnName("property_id");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Title)
+                .HasColumnType("character varying")
+                .HasColumnName("title");
+        });
+
+        modelBuilder.Entity<MonthlyIncome>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.Property(e => e.MonthIndex).HasColumnName("month");
+            entity.Property(e => e.Value).HasColumnName("value");
+        });
+
+        modelBuilder.Entity<MonthlyBooking>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.Property(e => e.MonthIndex).HasColumnName("month");
+            entity.Property(e => e.Value).HasColumnName("value");
         });
 
         OnModelCreatingPartial(modelBuilder);
