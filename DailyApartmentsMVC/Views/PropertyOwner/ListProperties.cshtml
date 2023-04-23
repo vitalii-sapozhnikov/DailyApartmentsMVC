@@ -191,7 +191,7 @@
                                 @if (p.BookingsCount > 0)
                                 {
                                     <div>
-                                        <a asp-action="ListBookings" asp-route-id="@p.Id" class="btn py-1 btn-success w-100 mt-3">Заявки</a>
+                                        <a asp-action="ListBookings" asp-route-status="new" asp-route-id="@p.Id" class="btn py-1 btn-success w-100 mt-3">Заявки</a>
                                     </div>
                                 }
                                 <div>

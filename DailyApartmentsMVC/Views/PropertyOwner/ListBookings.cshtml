@@ -13,6 +13,57 @@
         case "all":
             break;
         case "new":
+            foreach (var b in bookings)
+            {
+                int[] falseIndexes = Enumerable.Range(0, b.Statuses.Length)
+                .Where(i => b.Statuses[i] != null)
+                .ToArray();
+
+                b.Bookingids = b.Bookingids.Where((b, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Dates = b.Dates.Where((d, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Statuses = b.Statuses.Where(s => s == null).ToArray();
+                b.Durations = b.Durations.Where((d, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Guestnames = b.Guestnames.Where((n, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Guestemails = b.Guestemails.Where((e, i) => !falseIndexes.Contains(i)).ToArray();
+                b.GuestReviews = b.GuestReviews.Where((r, i) => !falseIndexes.Contains(i)).ToArray();
+                b.GuestComments = b.GuestComments.Where((c, i) => !falseIndexes.Contains(i)).ToArray();
+            }      
+            break;
+        case "confirmed":
+            foreach (var b in bookings)
+            {
+                int[] falseIndexes = Enumerable.Range(0, b.Statuses.Length)
+                .Where(i => b.Statuses[i] != true)
+                .ToArray();
+
+                b.Bookingids = b.Bookingids.Where((b, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Dates = b.Dates.Where((d, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Statuses = b.Statuses.Where(s => s == true).ToArray();
+                b.Durations = b.Durations.Where((d, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Guestnames = b.Guestnames.Where((n, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Guestemails = b.Guestemails.Where((e, i) => !falseIndexes.Contains(i)).ToArray();
+                b.GuestReviews = b.GuestReviews.Where((r, i) => !falseIndexes.Contains(i)).ToArray();
+                b.GuestComments = b.GuestComments.Where((c, i) => !falseIndexes.Contains(i)).ToArray();
+            }
+            break;
+        case "cancelled":
+            foreach (var b in bookings)
+            {
+                int[] falseIndexes = Enumerable.Range(0, b.Statuses.Length)
+                .Where(i => b.Statuses[i] != false)
+                .ToArray();
+
+                b.Bookingids = b.Bookingids.Where((b, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Dates = b.Dates.Where((d, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Statuses = b.Statuses.Where(s => s == false).ToArray();
+                b.Durations = b.Durations.Where((d, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Guestnames = b.Guestnames.Where((n, i) => !falseIndexes.Contains(i)).ToArray();
+                b.Guestemails = b.Guestemails.Where((e, i) => !falseIndexes.Contains(i)).ToArray();
+                b.GuestReviews = b.GuestReviews.Where((r, i) => !falseIndexes.Contains(i)).ToArray();
+                b.GuestComments = b.GuestComments.Where((c, i) => !falseIndexes.Contains(i)).ToArray();
+            }
+            break;
+        default:
             break;
 
     }
@@ -45,7 +96,7 @@
 
 
 <div class="container mt-4">
-    <!-- SELECT PROPERTY -->
+    <!-- FILTERING -->
     <form class="mb-4">
         <div class="form-group row align-items-end">
 
@@ -76,8 +127,8 @@
             </div>
 
             <div class="form-group mb-2 col-3" >
-                <label for="status">Оберіть період:</label>
-                <select id="status" name="status" class="form-select">
+                <label for="status">Статус:</label>
+                <select id="status" name="status" class="form-control">
                     @foreach (var item in ViewBag.Status)
                     {
                         if (item.Value == ViewBag.SelectedStatus)
@@ -93,7 +144,7 @@
             </div>
 
             <div class="col-2 mb-2">
-                <button type="submit" class="btn btn-primary mx-5 py-1">Застосувати</button>
+                <button type="submit" class="btn btn-primary mx-2 py-1">Застосувати</button>
             </div>
 
         </div>
@@ -101,9 +152,9 @@
     </form>
 
     <!-- BOOKING TABLE -->
-    @if (bookings.All(b => b.Bookingids == null))
+    @if (bookings.All(b => b.Bookingids == null || b.Bookingids.Length == 0))
     {
-        <h3>У вас немає жодного бронювання @(currId == -1 ? "" : "по цьому оголошенню")</h3>
+        <h3 class="mt-3">У вас немає жодного бронювання @(currId == -1 ? "" : "по цьому оголошенню")</h3>
     }
     else
     {
