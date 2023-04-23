@@ -3,7 +3,9 @@ using DailyApartmentsMVC.Models.OwnerModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using System.Diagnostics.Metrics;
 using System.Globalization;
@@ -217,13 +219,24 @@ namespace DailyApartmentsMVC.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> ListBookings(int id = -1)
+        public async Task<IActionResult> ListBookings(int id = -1, string status = "all")
         {
             var bookings = AppSettings.AppSettings.ownerContext.BookingsForOwners.ToList();
             var myRates = AppSettings.AppSettings.ownerContext.MyRatesAndCommentsForOwners.ToList();
 
             ViewBag.PropertyId = id;
             ViewBag.MyRates = myRates;
+
+            var statusSelect = new List<SelectListItem>
+            {
+                new SelectListItem {Value = "new", Text = "Нові"},
+                new SelectListItem {Value = "confirmed", Text = "Підтверджені"},
+                new SelectListItem {Value = "cancelled", Text = "Скасовані"},
+                new SelectListItem {Value = "all", Text = "Усі"},
+            };
+
+            ViewBag.Status = statusSelect;
+            ViewBag.SelectedStatus = status;
 
             return View(bookings);
         }
@@ -248,17 +261,23 @@ namespace DailyApartmentsMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Statistics(int id = -1)
+        public async Task<IActionResult> Statistics(string propertyId = "-1", string period = "-1")
         {
+            int? propId = propertyId == "-1" ? null : int.Parse(propertyId);
+            int? per = period == "-1" ? null : int.Parse(period);
+
             var propertyList = AppSettings.AppSettings.ownerContext.OwnerBookingsStatistics.Select(b => new
             {
                 Title = b.Title ?? "",
                 Id = b.PropertyId ?? -1
             }).Distinct().ToList();
+            
 
+            var responseMonthlyIncome = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
+                "SELECT * FROM owner_monthly_income(@p0, @p1)", propId, per)
+                .ToList();
 
-            var monthlyIncome = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
-                id == -1 ? "SELECT * FROM owner_monthly_income()" : "SELECT * FROM owner_monthly_income({0})", id)
+            var monthlyIncome = responseMonthlyIncome
                 .Select(i => new
                 {
                     Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(int.Parse( i.MonthIndex )),
@@ -266,14 +285,46 @@ namespace DailyApartmentsMVC.Controllers
                 })
                 .ToList();
 
-            var monthlyBookings = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
-                id == -1 ? "SELECT * FROM owner_monthly_bookings()" : "SELECT * FROM owner_monthly_bookings({0})", id)
+
+
+
+            var responseMonthlyBookings = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
+                "SELECT * FROM owner_monthly_bookings(@p0, @p1)", propId, per)
+                .ToList();
+
+
+            var monthlyBookings = responseMonthlyBookings
                 .Select(i => new
                 {
                     Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(int.Parse(i.MonthIndex)),
                     Value = i.Value
                 })
                 .ToList();
+
+            while(monthlyIncome.Count() < (per ?? -1))
+            {
+                var firstMonth = monthlyIncome.First().Month;
+                DateTime prevMonth = DateTime.ParseExact(firstMonth, "MMMM", CultureInfo.GetCultureInfo("uk-UA")).AddMonths(-1);
+
+                monthlyIncome.Insert(0, new
+                {
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(prevMonth.Month),
+                    Value = 0m,
+                });
+            }
+
+            while (monthlyBookings.Count() < (per ?? -1))
+            {
+                var firstMonth = monthlyBookings.First().Month;
+                DateTime prevMonth = DateTime.ParseExact(firstMonth, "MMMM", CultureInfo.GetCultureInfo("uk-UA")).AddMonths(-1);
+
+                monthlyBookings.Insert(0, new
+                {
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(prevMonth.Month),
+                    Value = 0m,
+                });
+            }
+
 
             ViewBag.MonthlyIncome = monthlyIncome;
             ViewBag.MonthlyBookings = monthlyBookings;
@@ -284,7 +335,8 @@ namespace DailyApartmentsMVC.Controllers
             {
                 Title = p.Title,
                 Id = p.Id,
-                Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw("SELECT * FROM owner_monthly_income({0})", p.Id).Sum(x => x.Value)
+                Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes
+                .FromSqlRaw("SELECT * FROM owner_monthly_income(@p0, @p1)", p.Id, per).Sum(x => x.Value)
             }).ToList();
 
             ViewBag.RatioIncome = ratioIncome;
@@ -295,10 +347,34 @@ namespace DailyApartmentsMVC.Controllers
             {
                 Title = p.Title,
                 Id = p.Id,
-                Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw("SELECT * FROM owner_monthly_bookings({0})", p.Id).Sum(x => x.Value)
+                Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
+                "SELECT * FROM owner_monthly_bookings(@p0, @p1)", p.Id, per)
+                .Sum(x => x.Value)
             }).ToList();
 
             ViewBag.RatioBookings = ratioBookings;
+
+
+            var periodSelect = new List<SelectListItem>
+            {
+                new SelectListItem {Value = "1", Text = "1 місяць"},
+                new SelectListItem {Value = "3", Text = "3 місяці"},
+                new SelectListItem {Value = "6", Text = "6 місяців"},
+                new SelectListItem {Value = "12", Text = "1 рік"},
+                new SelectListItem {Value = "-1", Text = "Увесь час"},
+            };
+
+            var propertySelect = new List<SelectListItem>();
+            foreach (var p in propertyList)
+                propertySelect.Add(new SelectListItem { Value = $"{p.Id}", Text = p.Title });
+            propertySelect.Add(new SelectListItem { Value = "-1", Text = "Усі оголошення" });
+
+            ViewBag.Period = periodSelect;
+            ViewBag.SelectedPeriod = period;
+
+            ViewBag.Property = propertySelect;
+            ViewBag.SelectedProperty = propertyId;
+            
 
             return View();
         }

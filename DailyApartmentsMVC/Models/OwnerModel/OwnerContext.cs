@@ -135,6 +135,7 @@ public partial class OwnerContext : DbContext
 
             entity.Property(e => e.MonthIndex).HasColumnName("month");
             entity.Property(e => e.Value).HasColumnName("value");
+            entity.Property(e => e.Year).HasColumnName("year");
         });
 
         modelBuilder.Entity<MonthlyBooking>(entity =>
@@ -143,6 +144,7 @@ public partial class OwnerContext : DbContext
 
             entity.Property(e => e.MonthIndex).HasColumnName("month");
             entity.Property(e => e.Value).HasColumnName("value");
+            entity.Property(e => e.Year).HasColumnName("year");
         });
 
         OnModelCreatingPartial(modelBuilder);

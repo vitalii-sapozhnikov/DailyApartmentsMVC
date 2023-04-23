@@ -7,6 +7,15 @@
     var bookings = Model.ToList();
     if (currId != -1)
         bookings = bookings.Where(b => b.PropertyId == currId).ToList();
+
+    switch (ViewBag.SelectedStatus)
+    {
+        case "all":
+            break;
+        case "new":
+            break;
+
+    }
 }
 
 <!-- TOASTER -->
@@ -38,8 +47,9 @@
 <div class="container mt-4">
     <!-- SELECT PROPERTY -->
     <form class="mb-4">
-        <div class="form-group d-flex">
-            <div style="width: 400px;">
+        <div class="form-group row align-items-end">
+
+            <div class="form-group mb-2 col-3" style="padding-right: 1rem;">
                 <label for="exampleSelect">Оберіть оголошення</label>
                 <select name="id" class="form-control" id="exampleSelect">
                     @if (currId == -1)
@@ -64,7 +74,27 @@
                     }
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary mx-5 py-1">Застосувати</button>
+
+            <div class="form-group mb-2 col-3" >
+                <label for="status">Оберіть період:</label>
+                <select id="status" name="status" class="form-select">
+                    @foreach (var item in ViewBag.Status)
+                    {
+                        if (item.Value == ViewBag.SelectedStatus)
+                        {
+                            <option value="@item.Value" selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>                
+            </div>
+
+            <div class="col-2 mb-2">
+                <button type="submit" class="btn btn-primary mx-5 py-1">Застосувати</button>
+            </div>
 
         </div>
 
