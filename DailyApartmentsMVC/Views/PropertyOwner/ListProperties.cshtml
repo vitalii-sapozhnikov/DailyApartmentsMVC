@@ -7,7 +7,8 @@
 <!-- ================ ACTIVATION/DEACTIVATION TOAST ================ -->
 @if (TempData.ContainsKey("Deactivated") && TempData["Deactivated"] is bool deactivated)
 {
-    <div id="toast-container" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-delay="0" data-autohide="false">
+    <!--suppress ALL -->
+<div id="toast-container" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-delay="0" data-autohide="false">
         <div class="toast-header @(deactivated ? "bg-info" : "bg-success")">
             <strong class="me-auto" style="color: #FFF;">Ви @(deactivated ? "деактивували" : "активували") оголошення!</strong>
             <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
@@ -31,10 +32,10 @@
     </div>
 }
 
-@if (TempData.ContainsKey("Edited") && TempData["Edited"] is bool edited)
+@if (TempData.ContainsKey("Edited") && TempData["Edited"] is bool)
 {
     <div id="toast-container" class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-delay="0" data-autohide="false">
-        <div class="toast-header bg-info" )">
+        <div class="toast-header bg-info">
             <strong class="me-auto" style="color: #FFF;">Ви редактували оголошення!</strong>
             <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
                 <span aria-hidden="true"></span>
@@ -53,7 +54,7 @@
 </script>
 
 
-@if (Model.Count() > 0)
+@if (Model.Any())
 {
 
     <!-- ================ Navigation Tabs Section ================ -->
@@ -79,9 +80,9 @@
                         <div class="row">
 
                             <div class="col-3 px-4 py-3 d-flex align-items-center">
-                                @if (p.PhotoLinks.Count() > 0)
+                                @if (p.PhotoLinks != null && p.PhotoLinks.Any())
                                 {
-                                    <img class="img-thumbnail width="50" src="@p.PhotoLinks[0]" />
+                                    <img class="img-thumbnail" src="@p.PhotoLinks[0]" alt="thumbnail"/>
                                 }
                             </div>
 
@@ -246,7 +247,7 @@
                         <div class="row">
 
                             <div class="col-3 px-4 py-3 d-flex align-items-center">
-                                <img class="img-thumbnail width="50" src="@p.PhotoLinks[0]" />
+                                <img class="img-thumbnail" src="@p.PhotoLinks?[0]" alt="thumbnail"/>
                             </div>
 
                             <div class="col-6 py-3 px-3 ">
@@ -256,7 +257,17 @@
                                     <div>
                                         @if (p.Verified == null)
                                         {
-                                            <a class="text-danger text-sm-start" data-toggle="tooltip" title="Модератор верифіковує ваше оголошення">Оголошення розглядається</a>
+                                            <a class="text-info text-sm-start" data-toggle="tooltip" title="Модератор верифіковує ваше оголошення">Оголошення розглядається</a>
+
+                                            <script>
+                                                $(document).ready(function () {
+                                                    $('[data-toggle="tooltip"]').tooltip();
+                                                });
+                                            </script>
+                                        }
+                                        else if (p.Verified == false)
+                                        {
+                                            <a class="text-danger text-sm-start" data-toggle="tooltip" title="З вами зв'яжуться, щоб обговорити деталі відмови">Відмовлено у публікації</a>
 
                                             <script>
                                                 $(document).ready(function () {

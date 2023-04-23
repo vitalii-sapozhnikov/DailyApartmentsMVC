@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using DailyApartmentsMVC.Models;
 using DailyApartmentsMVC.Models.GuestModel;
 using System.Diagnostics;
-using DailyApartmentsMVC.AppSettings;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 

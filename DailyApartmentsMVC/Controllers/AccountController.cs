@@ -4,24 +4,21 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using System.Configuration;
 using System.Security.Claims;
-using System.Web.Helpers;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 using DailyApartmentsMVC.Models.OwnerModel;
+using DailyApartmentsMVC.Models.ModeratorModel;
 
 namespace DailyApartmentsMVC.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
-        private GuestContext _guestContext;
 
         public AccountController(IConfiguration configuration, IServiceProvider serviceProvider)
         {
-            this.configuration = configuration;
+            this._configuration = configuration;
             _serviceProvider = serviceProvider;
         }
 
@@ -48,7 +45,7 @@ namespace DailyApartmentsMVC.Controllers
             {
                 if (ownerRegistration.OwnerUserName != null)
                 {
-                    using (var connection = new NpgsqlConnection(configuration.GetConnectionString("UserManager")))
+                    using (var connection = new NpgsqlConnection(_configuration.GetConnectionString("UserManager")))
                     {
                         await connection.OpenAsync();
                         using (var command = new NpgsqlCommand())
@@ -70,7 +67,7 @@ namespace DailyApartmentsMVC.Controllers
             {
                 if (guestRegistration.UserName != null)
                 {
-                    using (var connection = new NpgsqlConnection(configuration.GetConnectionString("UserManager")))
+                    using (var connection = new NpgsqlConnection(_configuration.GetConnectionString("UserManager")))
                     {
                         await connection.OpenAsync();
                         using (var command = new NpgsqlCommand())
@@ -101,18 +98,49 @@ namespace DailyApartmentsMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password, bool isPropertyOwner)
         {
+            string connectionString = $"host=localhost;database=airbnb;port=5432;username={username};password={password}";
+
+            try
+            {
+                var connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
+                DbContextOptions<ModeratorContext> options = new DbContextOptionsBuilder<ModeratorContext>()
+                .UseNpgsql(connectionString).Options;
+
+                AppSettings.AppSettings.moderatorContext = new ModeratorContext(options);
+
+
+                var identity = new ClaimsIdentity(new[] {
+                            new Claim(ClaimTypes.Name, username),
+                            new Claim(ClaimTypes.Role, "moderator")
+                        }, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var principal = new ClaimsPrincipal(identity);
+                var props = new AuthenticationProperties();
+
+                // Sign in user
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
+
+                return RedirectToAction("Index", "Moderator");
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+
             if (isPropertyOwner)
             {
                 username += "_owner";
 
-                string connectionString = $"host=localhost;database=airbnb;port=5432;username={username};password={password}";
+                connectionString = $"host=localhost;database=airbnb;port=5432;username={username};password={password}";
 
                 try
                 {
                     var connection = new NpgsqlConnection(connectionString);
                     await connection.OpenAsync();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     ModelState.AddModelError("", "Невірний логін або пароль");
                     return View();
@@ -135,20 +163,20 @@ namespace DailyApartmentsMVC.Controllers
                 // Sign in user
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
 
-                return RedirectToAction("Index", "PropertyOwner");
+                return RedirectToAction("ListProperties", "PropertyOwner");
             }
             else
             {
                 username += "_guest";
 
-                string connectionString = $"host=localhost;database=airbnb;port=5432;username={username};password={password}";
+                connectionString = $"host=localhost;database=airbnb;port=5432;username={username};password={password}";
 
                 try
                 {
                     var connection = new NpgsqlConnection(connectionString);
                     await connection.OpenAsync();
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
                     ModelState.AddModelError("", "Невірний логін або пароль");
                     return View();

@@ -28,7 +28,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-5">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="TodoTasks" asp-action="Index" style="font-family: 'Abril Fatface', cursive;">
+                <a class="navbar-brand" style="font-family: 'Abril Fatface', cursive;" asp-action="Index">
                     Dailyapartments
                 </a>
                 <div class="collapse navbar-collapse" id="navbarColor01">
@@ -44,7 +44,7 @@
                                 <a class="nav-link" asp-controller="Guest" asp-action="Bookings">Мої бронювання</a>
                             </li>
                         }
-                        @if (User.IsInRole("propertyOwner"))
+                        else if (User.IsInRole("propertyOwner"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="PropertyOwner" asp-action="ListProperties">Мої оголошення</a>
@@ -59,9 +59,15 @@
                                 <a class="nav-link" asp-controller="PropertyOwner" asp-action="Statistics" asp-route-id="-1">Аналітика</a>
                             </li>
                         }
+                        else if (User.IsInRole("moderator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Moderator" asp-action="ListProperties">Робоча панель</a>
+                            </li>
+                        }
 
                     </ul>
-                    @if(!User.IsInRole("guest") && !User.IsInRole("propertyOwner"))
+                    @if(!User.IsInRole("guest") && !User.IsInRole("propertyOwner") && !User.IsInRole("moderator"))
                     {
                         <form class="d-flex">
                             <a asp-action="Register" 
@@ -97,7 +103,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - DailyApartmentsMVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - DailyApartmentsMVC - <a asp-area="" asp-controller="Home">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

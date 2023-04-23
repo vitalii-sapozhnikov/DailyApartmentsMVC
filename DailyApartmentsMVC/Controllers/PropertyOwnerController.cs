@@ -1,15 +1,10 @@
-﻿using DailyApartmentsMVC.Models;
-using DailyApartmentsMVC.Models.OwnerModel;
+﻿using DailyApartmentsMVC.Models.OwnerModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
-using System.Diagnostics.Metrics;
 using System.Globalization;
-using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace DailyApartmentsMVC.Controllers

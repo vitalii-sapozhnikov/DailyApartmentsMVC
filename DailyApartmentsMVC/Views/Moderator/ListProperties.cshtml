@@ -1,0 +1,250 @@
+﻿@model IEnumerable<DailyApartmentsMVC.Models.ModeratorModel.PropertiesForModerator>
+
+@{
+    ViewBag.Title = "Properties";
+    Layout = "_Layout";
+}
+
+@if (Model.Any())
+{
+    foreach (var p in Model)
+    {
+        <div class="container mt-3" style="background: #FFF;">
+            <div class="row">
+
+                <div class="col-3 px-4 py-3 d-flex align-items-center">
+                    @if (p.PhotoLinks != null && p.PhotoLinks.Any())
+                    {
+                        <img class="img-thumbnail" src="@p.PhotoLinks[0]" alt="thumbnail"/>
+                    }
+                </div>
+
+                <div class="col-6 py-3 px-3 ">
+
+                    <div style="display: flex; flex-direction: column; justify-content: space-between; min-height: 100%;">
+                        <div></div>
+                        <div class="h-50">
+                            <h4>@p.Title</h4>
+                            <p class="mt-3" style="margin-bottom: 0;">@p.Description</p>
+                        </div>
+                        <div>
+                            <p class="text-muted" style="margin-bottom: 0;">
+                                @p.PublicationDate?.ToString("D") - @p.Country, @p.City
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-3 px-5 py-3 d-flex flex-column justify-content-center">
+                    <div>
+                        <a class="btn py-1 btn-primary w-100 my-1" data-bs-toggle="modal" data-bs-target="@($"#prop_details_{p.PropertyId}")">Деталі оголошення</a>
+
+                        <div class="modal fade" id="@($"prop_details_{p.PropertyId}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Деталі оголошення</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <div class="form-group mb-3">
+                                            <label>Назва</label>
+                                            <input type="text" class="form-control fw-semibold text-black" readonly value="@p.Title" />
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label>Опис</label>
+                                            <textarea class="form-control w-100" rows="4" readonly>@p.Description</textarea>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label>Місцезнаходження</label>
+                                            <input type="text" class="form-control" readonly value="@p.Country, @p.City, @p.Street @p.House, @p.Flat" />
+                                        </div>
+
+                                        <div class="form-group mb-3 d-flex justify-content-between">
+                                            <div>
+                                                <label>Кількість кімнат</label>
+                                                <input type="number"
+                                               readonly
+                                               class="form-control"
+                                               value="@p.RoomNumber">
+                                            </div>
+                                            <div>
+                                                <label>Спальних місць</label>
+                                                <input type="number"
+                                               readonly
+                                               class="form-control"
+                                               value="@p.SleepingPlaceNumber">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group mb-3 d-flex justify-content-between">
+                                            <div>
+                                                <label>Вартість</label>
+                                                <input type="text"
+                                               readonly
+                                               class="form-control fw-semibold"
+                                               value="$ @p.Price">
+                                            </div>
+
+                                            <div>
+                                                <label>Дата публікації</label>
+                                                <input type="text"
+                                               readonly
+                                               class="form-control"
+                                               value="@p.PublicationDate?.ToString("D")">
+                                            </div>
+                                        </div>
+
+                                        
+
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <a class="btn py-1 btn-info w-100 my-1" data-bs-toggle="modal" data-bs-target="@($"#owner_details_{p.PropertyOwnerId}")">
+                            Деталі власника
+                        </a>
+
+                        <div class="modal fade" id="@($"owner_details_{p.PropertyOwnerId}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Деталі власника</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <div class="form-group mb-3">
+                                            <label>Ім'я'</label>
+                                            <input type="text" class="form-control fw-semibold text-black" readonly value="@p.Name @p.Surname" />
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label>Електронна адреса</label>
+                                            <input type="text" class="form-control" readonly value="@p.Email" />
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label>Номер телефону</label>
+                                            <input type="text" class="form-control" readonly value="@p.PhoneNumber" />
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label>Номер паспорта</label>
+                                            <input type="text" class="form-control" readonly value="@p.PassportId" />
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label>Податковий номер</label>
+                                            <input type="text" class="form-control" readonly value="@p.TaxNumber" />
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <a class="btn py-1 btn-success w-100 my-1" data-bs-toggle="modal" data-bs-target="@($"#approve_{p.PropertyId}")">
+                            Підтвердити
+                        </a>
+
+                        <div class="modal fade" id="@($"approve_{p.PropertyId}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Ви точно бажаєте верифікувати оголошення?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <p>
+                                            Перед тим, як натиснути кнопку "ПІДТВЕРДИТИ", Ви повинні переконатись, що 
+                                            дані, вказані в оголошенні особою <b>@p.Name @p.Surname</b> правильні та відповідають
+                                            дійсності.
+                                        </p>
+                                        <p>
+                                            Для уточнення інформації зв'яжіться з <b>@p.Name @p.Surname</b> за допомогою телефону
+                                            або електронного листа.
+                                        </p>
+                                        
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <form asp-action="ApprovePublication" method="post" asp-route-id="@p.PropertyId">
+                                            <button type="submit" class="btn btn-success">Підтвердити</button>
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <a class="btn py-1 btn-danger w-100 my-1" data-bs-toggle="modal" data-bs-target="@($"#cancel_{p.PropertyId}")">
+                            Відхилити
+                        </a>
+
+                        <div class="modal fade" id="@($"cancel_{p.PropertyId}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Ви точно бажаєте відмовити в публікації?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                        <p>
+                                            Перед тим, як натиснути кнопку "ВІДХИЛИТИ", Ви повинні переконатись, що 
+                                            дані, вказані в оголошенні особою <b>@p.Name @p.Surname</b> некоректні або не відповідають
+                                            дійсності.
+                                        </p>
+                                        <p>
+                                            Для уточнення інформації зв'яжіться з <b>@p.Name @p.Surname</b> за допомогою телефону
+                                            або електронного листа.
+                                        </p>
+                                        
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <form asp-action="DenyPublication" method="post" asp-route-id="@p.PropertyId">
+                                            <button type="submit" class="btn btn-danger">Відхилити</button>
+
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }    
+}

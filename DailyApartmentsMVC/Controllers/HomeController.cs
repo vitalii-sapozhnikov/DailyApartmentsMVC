@@ -1,10 +1,4 @@
-﻿using DailyApartmentsMVC.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.Web;
-using System.Xml.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace DailyApartmentsMVC.Controllers
 {
