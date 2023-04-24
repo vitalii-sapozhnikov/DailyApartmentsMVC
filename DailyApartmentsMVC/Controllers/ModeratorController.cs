@@ -11,9 +11,19 @@ namespace DailyApartmentsMVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult ListProperties()
+        public IActionResult ListProperties(string country = "", string city = "")
         {
             var model = AppSettings.AppSettings.moderatorContext.PropertiesForModerators.ToList();
+
+            if (!string.IsNullOrEmpty(country))
+                model = model.Where(m => m.Country == country).ToList();
+
+            if (!string.IsNullOrEmpty(city))
+                model = model.Where(m => m.City == city).ToList();
+
+            ViewBag.City = city;
+            ViewBag.Country = country;
+
             return View(model);
         }
 
