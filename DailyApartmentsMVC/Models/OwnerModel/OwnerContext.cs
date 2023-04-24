@@ -19,6 +19,7 @@ public partial class OwnerContext : DbContext
     public virtual DbSet<BookingsForOwner> BookingsForOwners { get; set; }
     public virtual DbSet<MyRatesAndCommentsForOwner> MyRatesAndCommentsForOwners { get; set; }
     public virtual DbSet<OwnerBookingsStatistic> OwnerBookingsStatistics { get; set; }
+    public virtual DbSet<TermsAttribute> TermsAttributes { get; set; }
     public DbSet<MonthlyIncome> MonthlyIncomes { get; set; }
     public DbSet<MonthlyBooking> MonthlyBookings { get; set; }
 
@@ -145,6 +146,19 @@ public partial class OwnerContext : DbContext
             entity.Property(e => e.MonthIndex).HasColumnName("month");
             entity.Property(e => e.Value).HasColumnName("value");
             entity.Property(e => e.Year).HasColumnName("year");
+        });
+
+
+        modelBuilder.Entity<TermsAttribute>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("terms_attribute_pkey");
+
+            entity.ToTable("terms_attribute");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
         });
 
         OnModelCreatingPartial(modelBuilder);

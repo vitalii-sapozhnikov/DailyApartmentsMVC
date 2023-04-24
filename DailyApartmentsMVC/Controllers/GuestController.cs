@@ -88,7 +88,13 @@ namespace DailyApartmentsMVC.Controllers
             //var lst = AppSettings.AppSettings.guestContext.GetPropertyDetails(id);
             var propertyDetails = AppSettings.AppSettings.guestContext.PropertyDetails.FromSqlRaw("SELECT * FROM get_property_details({0})", id).ToList();
 
+            var additionalTerms = AppSettings.AppSettings.guestContext.AdditionalAttributes.FromSqlRaw(
+                "SELECT * FROM get_additional_terms(@p0);", id)
+                .ToList();
+
             ViewBag.Id = $"{id}";
+            ViewBag.AdditionalTerms = additionalTerms;
+
             return View(propertyDetails);
         }
 

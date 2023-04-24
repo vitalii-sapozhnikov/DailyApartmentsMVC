@@ -22,6 +22,7 @@ public partial class GuestContext : DbContext
     public virtual DbSet<ReviewAttribute> ReviewAttributes { get; set; }
     public virtual DbSet<PropertyComment> PropertyComments { get; set; }
     public virtual DbSet<PropertyReview> PropertyReviews { get; set; }
+    public DbSet<AdditionalAttribute> AdditionalAttributes { get; set; }
 
 
 
@@ -165,6 +166,16 @@ public partial class GuestContext : DbContext
             entity.Property(e => e.BookingId).HasColumnName("booking_id");
             entity.Property(e => e.ReviewAttributeId).HasColumnName("review_attribute_id");
             entity.Property(e => e.Value).HasColumnName("value");
+        });
+
+        modelBuilder.Entity<AdditionalAttribute>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.Property(e => e.PropertyId).HasColumnName("property_id");
+            entity.Property(e => e.AttributeId).HasColumnName("attribute_id");
+            entity.Property(e => e.Name).HasColumnName("attribute_name");
+            entity.Property(e => e.Value).HasColumnName("terms_value");
         });
 
         OnModelCreatingPartial(modelBuilder);

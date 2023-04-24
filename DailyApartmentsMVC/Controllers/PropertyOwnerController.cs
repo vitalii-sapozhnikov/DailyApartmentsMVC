@@ -20,11 +20,13 @@ namespace DailyApartmentsMVC.Controllers
         [HttpGet]
         public IActionResult AddProperty()
         {
+            ViewBag.Attributes = AppSettings.AppSettings.ownerContext.TermsAttributes.ToList();
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProperty(AddProperty model)
+        public async Task<IActionResult> AddProperty(AddProperty model, List<int> attribute)
         {
             // Check if the model is valid
             if (!ModelState.IsValid)
@@ -65,13 +67,22 @@ namespace DailyApartmentsMVC.Controllers
 
             var commandText = "CALL sp_add_property(@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11)";
 
-            AppSettings.AppSettings.ownerContext?.Database.ExecuteSqlRaw(commandText,
+            await AppSettings.AppSettings.ownerContext?.Database.ExecuteSqlRawAsync(commandText,
                 new object[] {
                     model.Title, model.Description, model.RoomNumber, model.SleepingPlaceNumber,
                     imageUrl, model.Price, model.Country, model.City, model.Street, model.House,
                     model.Type, model.MinRentalDays
                 });
 
+            int id = AppSettings.AppSettings.ownerContext.PropertyListOwners.Max(x => x.Id) ?? -1;
+            if(id != -1 && attribute.Any())
+            {
+                foreach (var attr in attribute)
+                {
+                    AppSettings.AppSettings.ownerContext.Database
+                        .ExecuteSqlRawAsync("CALL insert_additional_term(@p0, @p1, @p2);", id, attr, true);
+                }
+            }
 
             // Redirect to a success page
             ViewBag.PropertyAdded = true;
