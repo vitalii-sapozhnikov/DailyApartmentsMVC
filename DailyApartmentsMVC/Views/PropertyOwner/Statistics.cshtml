@@ -14,7 +14,12 @@
 
 
             <div class="form-group mb-2 col-2" style="padding-right: 1rem;">
-                <label for="period">Оберіть період:</label>
+                <label for="analytics-date" style="margin-bottom: 0.75rem;">Оберіть дату:</label>
+                <input type="date" id="analytics-date" name="date" value="@ViewBag.Date.ToString("yyyy-MM-dd")" style="background-color: transparent; padding: 10px; border: none; border-bottom: 1px solid #DDDDDD;" />
+            </div>
+
+            <div class="form-group mb-2 col-3" style="padding-right: 1rem;">
+                <label for="period">Оберіть період (попередні):</label>
                 <select id="period" name="period" class="form-select">
                     @foreach (var item in ViewBag.Period)
                     {

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Npgsql;
+using NpgsqlTypes;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
@@ -267,8 +269,20 @@ namespace DailyApartmentsMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Statistics(string propertyId = "-1", string period = "-1")
+        public async Task<IActionResult> Statistics(string propertyId = "-1", string period = "-1", DateTime? date = null)
         {
+            if (date == null)
+            {
+                date = DateTime.Now;
+            }
+
+
+            var dateParameter = new NpgsqlParameter("date_param", NpgsqlDbType.Date)
+            {
+                Value = date
+            };
+
+
             int? propId = propertyId == "-1" ? null : int.Parse(propertyId);
             int? per = period == "-1" ? null : int.Parse(period);
 
@@ -280,7 +294,7 @@ namespace DailyApartmentsMVC.Controllers
             
 
             var responseMonthlyIncome = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
-                "SELECT * FROM owner_monthly_income(@p0, @p1)", propId, per)
+                "SELECT * FROM owner_monthly_income(@p0, @p1, @date_param)", propId, per, dateParameter)
                 .ToList();
 
             var monthlyIncome = responseMonthlyIncome
@@ -295,7 +309,7 @@ namespace DailyApartmentsMVC.Controllers
 
 
             var responseMonthlyBookings = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
-                "SELECT * FROM owner_monthly_bookings(@p0, @p1)", propId, per)
+                "SELECT * FROM owner_monthly_bookings(@p0, @p1, @date_param)", propId, per, dateParameter)
                 .ToList();
 
 
@@ -309,7 +323,16 @@ namespace DailyApartmentsMVC.Controllers
 
             while(monthlyIncome.Count() < (per ?? -1))
             {
-                var firstMonth = monthlyIncome.First().Month;
+                string? firstMonth;
+                if (monthlyIncome.Count() > 0)
+                {
+                    firstMonth = monthlyIncome.First().Month;
+                }
+                else
+                {
+                    firstMonth = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month);
+                }
+
                 DateTime prevMonth = DateTime.ParseExact(firstMonth, "MMMM", CultureInfo.GetCultureInfo("uk-UA")).AddMonths(-1);
 
                 monthlyIncome.Insert(0, new
@@ -321,7 +344,16 @@ namespace DailyApartmentsMVC.Controllers
 
             while (monthlyBookings.Count() < (per ?? -1))
             {
-                var firstMonth = monthlyBookings.First().Month;
+                string? firstMonth;
+                if (monthlyBookings.Count() > 0)
+                {
+                    firstMonth = monthlyBookings.First().Month;
+                }
+                else
+                {
+                    firstMonth = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month);
+                }
+
                 DateTime prevMonth = DateTime.ParseExact(firstMonth, "MMMM", CultureInfo.GetCultureInfo("uk-UA")).AddMonths(-1);
 
                 monthlyBookings.Insert(0, new
@@ -342,7 +374,7 @@ namespace DailyApartmentsMVC.Controllers
                 Title = p.Title,
                 Id = p.Id,
                 Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes
-                .FromSqlRaw("SELECT * FROM owner_monthly_income(@p0, @p1)", p.Id, per).Sum(x => x.Value)
+                .FromSqlRaw("SELECT * FROM owner_monthly_income(@p0, @p1, @date_param)", p.Id, per, dateParameter).Sum(x => x.Value)
             }).ToList();
 
             ViewBag.RatioIncome = ratioIncome;
@@ -354,7 +386,7 @@ namespace DailyApartmentsMVC.Controllers
                 Title = p.Title,
                 Id = p.Id,
                 Value = AppSettings.AppSettings.ownerContext.MonthlyIncomes.FromSqlRaw(
-                "SELECT * FROM owner_monthly_bookings(@p0, @p1)", p.Id, per)
+                "SELECT * FROM owner_monthly_bookings(@p0, @p1, @date_param)", p.Id, per, dateParameter)
                 .Sum(x => x.Value)
             }).ToList();
 
@@ -377,6 +409,8 @@ namespace DailyApartmentsMVC.Controllers
 
             ViewBag.Period = periodSelect;
             ViewBag.SelectedPeriod = period;
+
+            ViewBag.Date = date;
 
             ViewBag.Property = propertySelect;
             ViewBag.SelectedProperty = propertyId;
