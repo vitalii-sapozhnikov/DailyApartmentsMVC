@@ -34,7 +34,7 @@
                     <button type="submit" class="btn btn-primary w-100">Пошук</button>
                 </div>
             </div>
-            
+
         </form>
     </div>
     <div class="mt-3">
@@ -152,7 +152,7 @@
                                 </a>
 
                                 <div class="modal fade" id="@($"owner_details_{p.PropertyOwnerId}")" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-lg" style="max-width:65%;">
                                         <div class="modal-content">
 
                                             <div class="modal-header">
@@ -160,38 +160,50 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
 
-                                            <div class="modal-body">
+                                            <div class="modal-body row">
 
-                                                <div class="form-group mb-3">
-                                                    <label>Ім'я'</label>
-                                                    <input type="text" class="form-control fw-semibold text-black" readonly value="@p.Name @p.Surname" />
+                                                <div class="col-4">
+                                                    <div class="form-group mb-3">
+                                                        <label>Ім'я</label>
+                                                        <input type="text" class="form-control fw-semibold text-black" readonly value="@p.Name @p.Surname" />
+                                                    </div>
+
+                                                    <div class="form-group mb-3">
+                                                        <label>Електронна адреса</label>
+                                                        <input type="text" class="form-control" readonly value="@p.Email" />
+                                                    </div>
+
+                                                    <div class="form-group mb-3">
+                                                        <label>Номер телефону</label>
+                                                        <input type="text" class="form-control" readonly value="@p.PhoneNumber" />
+                                                    </div>
+
+                                                    <div class="form-group mb-3">
+                                                        <label>Номер паспорта</label>
+                                                        <input type="text" class="form-control" readonly value="@p.PassportId" />
+                                                    </div>
+
+                                                    <div class="form-group mb-3">
+                                                        <label>Податковий номер</label>
+                                                        <input type="text" class="form-control" readonly value="@p.TaxNumber" />
+                                                    </div>
+
+
+
                                                 </div>
 
-                                                <div class="form-group mb-3">
-                                                    <label>Електронна адреса</label>
-                                                    <input type="text" class="form-control" readonly value="@p.Email" />
+
+                                                <div class="col-8">
+                                                    <img class="mx-5" id="product-image" src="@p.CertificateLink" width="500">
                                                 </div>
 
-                                                <div class="form-group mb-3">
-                                                    <label>Номер телефону</label>
-                                                    <input type="text" class="form-control" readonly value="@p.PhoneNumber" />
-                                                </div>
 
-                                                <div class="form-group mb-3">
-                                                    <label>Номер паспорта</label>
-                                                    <input type="text" class="form-control" readonly value="@p.PassportId" />
-                                                </div>
 
-                                                <div class="form-group mb-3">
-                                                    <label>Податковий номер</label>
-                                                    <input type="text" class="form-control" readonly value="@p.TaxNumber" />
-                                                </div>
 
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
-                                                </div>
                                             </div>
-
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Назад</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

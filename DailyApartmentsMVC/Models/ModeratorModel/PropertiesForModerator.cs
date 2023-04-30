@@ -48,4 +48,6 @@ public partial class PropertiesForModerator
     public string? PassportId { get; set; }
 
     public string? TaxNumber { get; set; }
+
+    public string? CertificateLink { get; set; }
 }

@@ -71,6 +71,7 @@ namespace DailyApartmentsMVC.Models.ModeratorModel
                     .HasColumnType("character varying")
                     .HasColumnName("type");
                 entity.Property(e => e.Verified).HasColumnName("verified");
+                entity.Property(e => e.CertificateLink).HasColumnName("certificate_link");
             });
 
             OnModelCreatingPartial(modelBuilder);
