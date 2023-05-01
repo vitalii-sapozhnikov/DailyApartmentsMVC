@@ -50,30 +50,55 @@ namespace DailyApartmentsMVC.Controllers
                     using var imageStream = photo.OpenReadStream();
                     content.Add(new StreamContent(imageStream), "image", photo.FileName);
 
-                    var response = await httpClient.PostAsync("https://api.imgbb.com/1/upload", content);
+                    var response1 = await httpClient.PostAsync("https://api.imgbb.com/1/upload", content);
 
-                    if (response.IsSuccessStatusCode)
+                    if (response1.IsSuccessStatusCode)
                     {
-                        string responseContent = await response.Content.ReadAsStringAsync();
+                        string responseContent = await response1.Content.ReadAsStringAsync();
                         dynamic jsonResponse = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
                         imageUrl.Add($"{jsonResponse.data.url}");
                     }
                     else
                     {
-                        Console.WriteLine($"API request failed with status code {response.StatusCode}");
+                        Console.WriteLine($"API request failed with status code {response1.StatusCode}");
                     }
                 }
             }
 
+            string certificateUrl = string.Empty;
 
-            var commandText = "CALL sp_add_property(@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11)";
+            using var httpClient1 = new HttpClient();
+            using var content1 = new MultipartFormDataContent();
+            content1.Add(new StringContent("1ccfac3ffddc022d212e2a5617ba363f"), "key");
+
+            using var imageStream1 = model.Certificate.OpenReadStream();
+            content1.Add(new StreamContent(imageStream1), "image", model.Certificate.FileName);
+
+            var response = await httpClient1.PostAsync("https://api.imgbb.com/1/upload", content1);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string responseContent = await response.Content.ReadAsStringAsync();
+                dynamic jsonResponse = JsonConvert.DeserializeObject<dynamic>(responseContent);
+
+                certificateUrl = $"{jsonResponse.data.url}";
+            }
+            else
+            {
+                Console.WriteLine($"API request failed with status code {response.StatusCode}");
+            }
+
+
+
+
+            var commandText = "CALL sp_add_property(@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12)";
 
             await AppSettings.AppSettings.ownerContext?.Database.ExecuteSqlRawAsync(commandText,
                 new object[] {
                     model.Title, model.Description, model.RoomNumber, model.SleepingPlaceNumber,
                     imageUrl, model.Price, model.Country, model.City, model.Street, model.House,
-                    model.Type, model.MinRentalDays
+                    certificateUrl, model.Type, model.MinRentalDays
                 });
 
             int id = AppSettings.AppSettings.ownerContext.PropertyListOwners.Max(x => x.Id) ?? -1;

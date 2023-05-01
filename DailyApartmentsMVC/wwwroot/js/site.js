@@ -152,6 +152,14 @@ actualBtn.addEventListener('change', function () {
 })
 
 
+const actualBtn1 = document.getElementById('certificate-input');
+
+const fileChosen1 = document.getElementById('file-chosen1');
+
+actualBtn1.addEventListener('change', function () {
+    fileChosen1.textContent = this.files[0].name;
+})
+
 
 
 

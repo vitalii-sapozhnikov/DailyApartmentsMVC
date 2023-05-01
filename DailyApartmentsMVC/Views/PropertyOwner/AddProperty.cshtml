@@ -90,6 +90,21 @@
 
             <hr />
 
+            <h6 class="mb-3">Додайте документ, що підтверджує <b>право власності</b> на нерухомість</h6>
+
+            <div class="form-group mb-3">
+                <!-- actual upload which is hidden -->
+                <input id="certificate-input" type="file" asp-for="Certificate" required  hidden/>
+
+                <!-- our custom upload button -->
+                <label id="lb1" for="certificate-input">Оберіть файл</label>
+
+                <!-- name of file chosen -->
+                <span id="file-chosen1">Не вибрано</span>
+            </div>  
+
+            <hr />
+
             <div class="mb-4">
                 <h4 class="text-center mb-3">Додатково</h4>
 

@@ -69,6 +69,24 @@ body {
     font-family: sans-serif;
 }
 
+
+#lb1 {
+    background-color: #62B965;
+    color: white;
+    padding: 0.5rem;
+    font-family: sans-serif;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+#file-chosen1 {
+    margin-left: 0.3rem;
+    font-family: sans-serif;
+}
+
+
+
 .star-review {
     color: #e7711b;
     font-size: 2rem;

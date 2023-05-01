@@ -28,6 +28,10 @@ namespace DailyApartmentsMVC.Models.OwnerModel
         [Display(Name = "Оберіть фотографії")]
         public IFormFile[]? Photo { get; set; }
 
+        [Required]
+        [Display(Name = "Завантажте документ, що засвідчує власність нерухомості")]
+        public IFormFile Certificate { get; set; }
+
         public decimal Price { get; set; }
 
         [Required]
